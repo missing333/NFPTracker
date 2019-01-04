@@ -21,7 +21,7 @@ public class NfpEntry extends AppCompatActivity {
 
         getWindow().setLayout((int) (width * .8), (int) (height * .8));
 
-        Button save = findViewById(R.id.button2);
+        Button save = findViewById(R.id.save);
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

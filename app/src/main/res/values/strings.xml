@@ -90,4 +90,13 @@
         "when a user tries to pick up one of cards.\n\n"
     </string>
     <string name="action_settings">Settings</string>
+    <string name="print">Print</string>
+    <string name="pdf_show_local_progress_title">Title</string>
+    <string name="pdf_show_local_progress_content">content</string>
+    <string name="pdf_show_online_dialog_title">online title</string>
+    <string name="pdf_show_online_dialog_question">online question</string>
+    <string name="pdf_show_online_dialog_button_no">no</string>
+    <string name="pdf_show_online_dialog_button_yes">yes</string>
+
+
 </resources>
