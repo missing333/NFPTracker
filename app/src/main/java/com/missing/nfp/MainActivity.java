@@ -4,7 +4,11 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Rect;
 import android.graphics.pdf.PdfDocument;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -19,6 +23,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.HorizontalScrollView;
+import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.Toast;
@@ -31,16 +37,18 @@ import java.lang.reflect.Method;
 public class MainActivity extends AppCompatActivity {
 
 
-    private static final int NUM_ROWS = 8;
-    private static final int NUM_COLS = 30;
+    private static final int NUM_ROWS = 3;
+    private static final int NUM_COLS = 10;
+    TableLayout tLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.table_main);
 
+        //To switch to RecycleView, go to manifest, change default activity to MainActRecycleView instead.
 
-
+        tLayout = findViewById(R.id.tableLayout1);
 
         populateCells();
 
@@ -101,7 +109,6 @@ public class MainActivity extends AppCompatActivity {
         }
         else if (id == R.id.action_print) {
             printPDF();
-            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -126,43 +133,33 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-        //print here.
-        Toast.makeText(this,"Printing PDF now..." ,Toast.LENGTH_SHORT ).show();
+
+        //start creating PDF here.
+        Toast.makeText(this,"Creating PDF..." ,Toast.LENGTH_SHORT ).show();
 
         String extstoragedir = Environment.getExternalStorageDirectory().toString();
         File fol = new File(extstoragedir, "NFPapp");
         File folder=new File(fol,"pdf archive");
         if(!folder.exists()) {
             boolean bool = folder.mkdirs();
-            Log.d("nfpfolder", bool+"");
         }
         try {
             final File file = new File(folder, "sample.pdf");
             file.createNewFile();
             FileOutputStream fOut = new FileOutputStream(file);
 
-            PdfDocument document = new PdfDocument();
-            PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(2250, 1400, 1).create();
 
-            // start a page
+            Bitmap bm = PDFTools.getScreenshotFromTableView(tLayout);
+
+            PdfDocument document = new PdfDocument();
+            PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(bm.getWidth()+100, bm.getHeight()+100, 1).create();
             PdfDocument.Page page = document.startPage(pageInfo);
 
 
-            // draw something on the page
-            LayoutInflater inflater = (LayoutInflater)
-                    getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            View content = inflater.inflate(R.layout.table_main, null);
+            // draw table on the page
+            Canvas canvas = page.getCanvas();
+            canvas.drawBitmap(bm, null, new Rect(50, 50, bm.getWidth(),bm.getHeight()), null);
 
-            int measureWidth = View.MeasureSpec.makeMeasureSpec(page.getCanvas().getWidth(), View.MeasureSpec.EXACTLY);
-            int measuredHeight = View.MeasureSpec.makeMeasureSpec(page.getCanvas().getHeight(), View.MeasureSpec.EXACTLY);
-
-            content.measure(measureWidth, measuredHeight);
-            content.layout(0, 0, page.getCanvas().getWidth(), page.getCanvas().getHeight());
-
-
-
-            //figure out how to populate canvas here:
-            content.draw(page.getCanvas());
 
 
 
@@ -185,9 +182,14 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
+
+
             PDFTools.openPDF(this, Uri.fromFile(file));
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        finish();
+
     }
 }

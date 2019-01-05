@@ -10,12 +10,32 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.graphics.pdf.PdfDocument;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.RecyclerView;
+import android.util.LruCache;
+import android.view.View;
+import android.widget.HorizontalScrollView;
+import android.widget.LinearLayout;
+import android.widget.ListAdapter;
+import android.widget.ListView;
+import android.widget.ScrollView;
+import android.widget.TableLayout;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PDFTools {
     private static final String GOOGLE_DRIVE_PDF_READER_PREFIX = "http://drive.google.com/viewer?url=";
@@ -141,4 +161,97 @@ public class PDFTools {
         return context.getPackageManager().queryIntentActivities( i, PackageManager.MATCH_DEFAULT_ONLY ).size() > 0;
     }
 
+    public static Bitmap getScreenshotFromRecyclerView(RecyclerView view) {
+        RecyclerView.Adapter adapter = view.getAdapter();
+        Bitmap bigBitmap = null;
+        if (adapter != null) {
+            int size = adapter.getItemCount();
+            int width = 0;
+            Paint paint = new Paint();
+            int iWidth = 0;
+            final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
+
+            // Use 1/8th of the available memory for this memory cache.
+            final int cacheSize = maxMemory / 8;
+            LruCache<String, Bitmap> bitmaCache = new LruCache<>(cacheSize);
+            for (int i = 0; i < size; i++) {
+                RecyclerView.ViewHolder holder = adapter.createViewHolder(view, adapter.getItemViewType(i));
+                adapter.onBindViewHolder(holder, i);
+                holder.itemView.measure(View.MeasureSpec.makeMeasureSpec(view.getWidth(), View.MeasureSpec.EXACTLY),
+                        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+                holder.itemView.layout(0, 0, holder.itemView.getMeasuredWidth(), holder.itemView.getMeasuredHeight());
+                holder.itemView.setDrawingCacheEnabled(true);
+                holder.itemView.buildDrawingCache();
+                Bitmap drawingCache = holder.itemView.getDrawingCache();
+                if (drawingCache != null) {
+
+                    bitmaCache.put(String.valueOf(i), drawingCache);
+                }
+//                holder.itemView.setDrawingCacheEnabled(false);
+//                holder.itemView.destroyDrawingCache();
+                width += holder.itemView.getMeasuredWidth();
+            }
+
+            bigBitmap = Bitmap.createBitmap(view.getMeasuredWidth(), width, Bitmap.Config.ARGB_8888);
+            Canvas bigCanvas = new Canvas(bigBitmap);
+            bigCanvas.drawColor(Color.WHITE);
+
+            for (int i = 0; i < size; i++) {
+                Bitmap bitmap = bitmaCache.get(String.valueOf(i));
+                bigCanvas.drawBitmap(bitmap, iWidth, 0, paint);
+                iWidth += bitmap.getWidth();
+                bitmap.recycle();
+            }
+
+        }
+        return bigBitmap;
+    }
+
+    public static Bitmap getScreenshotFromTableView(TableLayout view) {
+
+        Bitmap bitmap;
+
+        view.setDrawingCacheEnabled(true);
+        view.buildDrawingCache(true);
+
+            bitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(),
+                    Bitmap.Config.ARGB_8888);
+            view.layout(0, 0, view.getLayoutParams().width,
+                    view.getLayoutParams().height);
+            Canvas c = new Canvas(bitmap);
+            view.draw(c);
+
+        view.setDrawingCacheEnabled(false);
+
+        return bitmap;
+    }
+
+    public static void saveImageToPDF(View title, Bitmap bitmap, String filename) {
+
+        String extstoragedir = Environment.getExternalStorageDirectory().toString();
+        File mFolder = new File(extstoragedir, "NFPapp");
+        File mFile = new File(mFolder, filename + ".pdf");
+        if (!mFile.exists()) {
+            PdfDocument document = new PdfDocument();
+            PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(bitmap.getWidth(), bitmap.getHeight(), 1).create();
+            PdfDocument.Page page = document.startPage(pageInfo);
+            Canvas canvas = page.getCanvas();
+            title.draw(canvas);
+
+            canvas.drawBitmap(bitmap, null, new Rect(0, 0, bitmap.getWidth(),bitmap.getHeight()), null);
+
+            document.finishPage(page);
+
+            try {
+                mFile.createNewFile();
+                OutputStream out = new FileOutputStream(mFile);
+                document.writeTo(out);
+                document.close();
+                out.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
 }

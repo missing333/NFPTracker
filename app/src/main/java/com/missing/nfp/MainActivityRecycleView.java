@@ -1,17 +1,38 @@
 package com.missing.nfp;
 
+import android.Manifest;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.pdf.PdfDocument;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.StrictMode;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 public class MainActivityRecycleView extends AppCompatActivity {
     ArrayList<NfpObject>[] cycle = new ArrayList[10];
     RecyclerView rView;
+    LinearLayout lView;
 
     //vars
     private ArrayList<String> mNames = new ArrayList<>();
@@ -23,6 +44,7 @@ public class MainActivityRecycleView extends AppCompatActivity {
         setContentView(R.layout.recycler_main);
 
         rView = findViewById(R.id.recyclerView);
+        lView = findViewById(R.id.llView);
 
         getImages();
 
@@ -122,6 +144,38 @@ public class MainActivityRecycleView extends AppCompatActivity {
         if (id == R.id.action_settings) {
             return true;
         }
+        else if (id == R.id.action_print) {
+            printPDF();
+        }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void printPDF() {
+
+
+        //checking for permission to write
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Permission is not granted
+            // request the permission
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    1);
+
+        }
+        else {
+            // Permission has already been granted
+        }
+
+
+
+
+        //start creating PDF here.
+        Toast.makeText(this,"Creating PDF..." ,Toast.LENGTH_SHORT ).show();
+
+        Bitmap bm = PDFTools.getScreenshotFromRecyclerView(rView);
+        PDFTools.saveImageToPDF(rView, bm,"test");
     }
 }

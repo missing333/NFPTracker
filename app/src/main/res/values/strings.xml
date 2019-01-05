@@ -97,6 +97,7 @@
     <string name="pdf_show_online_dialog_question">online question</string>
     <string name="pdf_show_online_dialog_button_no">no</string>
     <string name="pdf_show_online_dialog_button_yes">yes</string>
+    <string name="addDay">+Day</string>
 
 
 </resources>
