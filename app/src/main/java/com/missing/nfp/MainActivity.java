@@ -38,17 +38,19 @@ public class MainActivity extends AppCompatActivity {
 
 
     private static final int NUM_ROWS = 3;
-    private static final int NUM_COLS = 10;
+    private static final int NUM_COLS = 40;
     TableLayout tLayout;
+    Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.table_main);
+        tLayout = findViewById(R.id.tableLayout1);
+
+
 
         //To switch to RecycleView, go to manifest, change default activity to MainActRecycleView instead.
-
-        tLayout = findViewById(R.id.tableLayout1);
 
         populateCells();
 
@@ -77,8 +79,8 @@ public class MainActivity extends AppCompatActivity {
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Intent intent = new Intent(MainActivity.this, NfpEntry.class);
-                        startActivity(intent);
+                        intent = new Intent(MainActivity.this, NfpEntry.class);
+                        startActivityForResult(intent,1);
                     }
                 });
 
@@ -88,6 +90,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        //Retrieve data in the intent
+        String editTextValue = data.getStringExtra("DATE");
+        Toast.makeText(this,"Date is: " + editTextValue, Toast.LENGTH_SHORT).show();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
