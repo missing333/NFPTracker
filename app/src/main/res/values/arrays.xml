@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer-array name="mucusCodesArray">
+        <item>0</item>
+        <item>2</item>
+        <item>4</item>
+        <item>6</item>
+        <item>8</item>
+        <item>10</item>
+    </integer-array>
+
+    <string-array name="mucusFreqArray">
+        <item>x1</item>
+        <item>x2</item>
+        <item>x3</item>
+        <item>all day</item>
+    </string-array>
+</resources>

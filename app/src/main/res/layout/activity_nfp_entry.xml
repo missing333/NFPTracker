@@ -7,97 +7,153 @@
     tools:context=".NfpEntry"
     android:theme="@style/AppTheme.Modal.EasyRemove">
 
-    <LinearLayout
+    <ScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:clipToPadding="true"
+        android:fillViewport="true"
         android:gravity="center"
         android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            app:srcCompat="@drawable/accent_square" />
-
-        <EditText
-            android:id="@+id/date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="date"
-            android:text="11/13/2018"
-            android:textAlignment="center" />
-
-        <com.google.android.flexbox.FlexboxLayout
+        <TableLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:alignContent="stretch"
-            app:alignItems="center"
-            app:flexWrap="wrap"
-            app:justifyContent="center"
-            >
+            android:layout_height="wrap_content">
 
-            <CheckBox
-                android:id="@+id/checkBox9"
-                android:layout_width="wrap_content"
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_horizontal">
+
+                <EditText
+                    android:id="@+id/date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:inputType="date"
+                    android:text="11/13/2018"
+                    android:textAlignment="center"
+                    android:visibility="gone" />
+
+                <CalendarView
+                    android:id="@+id/calendarView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center">
+
+
+                <TextView
+                    android:id="@+id/mucusCodeLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/mucuscodelabel" />
+
+                <TextView
+                    android:id="@+id/mucusFreqLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/mucus_frequency" />
+            </TableRow>
+
+            <TableRow android:gravity="center">
+                <Spinner
+                    android:id="@+id/mucusCode"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:entries="@array/mucusCodesArray" />
+
+                <Spinner
+                    android:id="@+id/mucusFreq"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:entries="@array/mucusFreqArray" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_horizontal">
+
+                <com.google.android.flexbox.FlexboxLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:alignContent="stretch"
+                    app:alignItems="center"
+                    app:flexWrap="wrap"
+                    app:justifyContent="center">
+
+                    <CheckBox
+                        android:id="@+id/c"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="c" />
+
+                    <CheckBox
+                        android:id="@+id/k"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="k" />
+
+                    <CheckBox
+                        android:id="@+id/L"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="L" />
+
+                    <CheckBox
+                        android:id="@+id/w"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="w" />
+
+                </com.google.android.flexbox.FlexboxLayout>
+
+            </TableRow>
+
+            <TableRow
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="CheckBox" />
+                android:gravity="center">
 
-            <CheckBox
-                android:id="@+id/checkBox10"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="CheckBox" />
+                <ImageView
+                    android:id="@+id/imageView"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    app:srcCompat="@drawable/accent_square" />
 
-            <CheckBox
-                android:id="@+id/checkBox11"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="CheckBox" />
+            </TableRow>
 
-            <CheckBox
-                android:id="@+id/checkBox12"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="CheckBox" />
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center">
 
-            <CheckBox
-                android:id="@+id/checkBox13"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="CheckBox" />
-
-            <CheckBox
-                android:id="@+id/checkBox14"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="CheckBox" />
-
-            <CheckBox
-                android:id="@+id/checkBox15"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="CheckBox" />
-
-            <CheckBox
-                android:id="@+id/checkBox16"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="CheckBox" />
-
-        </com.google.android.flexbox.FlexboxLayout>
+                <Button
+                    android:id="@+id/save"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/save"
+                    tools:layout_editor_absoluteX="99dp"
+                    tools:layout_editor_absoluteY="439dp" />
+            </TableRow>
 
 
-        <Button
-            android:id="@+id/save"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Save" />
+        </TableLayout>
 
-    </LinearLayout>
+
+    </ScrollView>
+
 </android.support.constraint.ConstraintLayout>

@@ -6,7 +6,11 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Rect;
+import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.graphics.pdf.PdfDocument;
 import android.media.Image;
 import android.net.Uri;
@@ -18,6 +22,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,6 +32,7 @@ import android.widget.HorizontalScrollView;
 import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -37,10 +43,14 @@ import java.lang.reflect.Method;
 public class MainActivity extends AppCompatActivity {
 
 
-    private static final int NUM_ROWS = 3;
-    private static final int NUM_COLS = 40;
+    private static final int NUM_ROWS = 6;
+    private static final int NUM_COLS = 35;
+    private static final int HEADER_TEXT_SIZE = 30;
+    Button btnArray[][] = new Button[NUM_ROWS][NUM_COLS];
     TableLayout tLayout;
     Intent intent;
+    String activeDate;
+    String activeCode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,33 +69,66 @@ public class MainActivity extends AppCompatActivity {
 
     private void populateCells() {
         TableLayout table = findViewById(R.id.tableLayout1);
-        for (int row = 0; row < NUM_ROWS; row++){
-            TableRow tableRow = new TableRow(this);
+
+        //First Header Row
+        TableRow tableRow = new TableRow(this);
+        tableRow.setLayoutParams(new TableLayout.LayoutParams(
+                TableLayout.LayoutParams.WRAP_CONTENT,
+                TableLayout.LayoutParams.MATCH_PARENT,
+                1.0f
+        ));
+        table.addView(tableRow);
+        for (int col = 1; col < NUM_COLS + 1; col++) {
+            TextView label = new TextView(this);
+            label.setLayoutParams(new TableRow.LayoutParams(
+                    TableRow.LayoutParams.WRAP_CONTENT,
+                    TableRow.LayoutParams.MATCH_PARENT,
+                    1.0f
+            ));
+            label.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
+            label.setTextColor(Color.BLACK);
+            label.setTextSize(HEADER_TEXT_SIZE);
+            label.setTypeface(null, Typeface.BOLD);
+            label.setBackgroundResource(R.drawable.back);
+            label.setText(col + "");
+            tableRow.addView(label);
+        }
+
+
+        //All Subsequent Rows
+        for (int i = 0; i < btnArray.length; i++) {
+            tableRow = new TableRow(this);
             tableRow.setLayoutParams(new TableLayout.LayoutParams(
                     TableLayout.LayoutParams.WRAP_CONTENT,
                     TableLayout.LayoutParams.MATCH_PARENT,
                     1.0f
             ));
             table.addView(tableRow);
-
-            for (int col = 0; col < NUM_COLS; col++){
-                Button button = new Button(this);
-                button.setLayoutParams(new TableRow.LayoutParams(
+            for (int j = 0; j < btnArray[i].length; j++) {
+                btnArray[i][j] = new Button(this);
+                btnArray[i][j].setLayoutParams(new TableRow.LayoutParams(
                         TableRow.LayoutParams.WRAP_CONTENT,
                         TableRow.LayoutParams.MATCH_PARENT,
                         1.0f
                 ));
+                GradientDrawable gd = new GradientDrawable();
+                gd.setColor(0xFFFFFFFF); // Changes this drawbale to use a single color instead of a gradient
+                gd.setCornerRadius(5);
+                gd.setStroke(1, 0xFF000000);
+                btnArray[i][j].setBackground(gd);
 
-                button.setOnClickListener(new View.OnClickListener() {
+                final int finalJ = j;
+                final int finalI = i;
+                btnArray[i][j].setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         intent = new Intent(MainActivity.this, NfpEntry.class);
-                        startActivityForResult(intent,1);
+                        intent.putExtra("BUTTONROW", finalI);
+                        intent.putExtra("BUTTONCOL", finalJ);
+                        startActivityForResult(intent, 1);
                     }
                 });
-
-                tableRow.addView(button);
-
+                tableRow.addView(btnArray[i][j]);
             }
         }
     }
@@ -93,8 +136,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         //Retrieve data in the intent
-        String editTextValue = data.getStringExtra("DATE");
-        Toast.makeText(this,"Date is: " + editTextValue, Toast.LENGTH_SHORT).show();
+        activeDate = data.getStringExtra("DATE");  //TODO: pull from calendar picker instead of this
+        int btnRow = data.getIntExtra("BUTTONROW", -1);
+        int btnCol = data.getIntExtra("BUTTONCOL", -1);
+        //TODO: pull code and populate text
+        //TODO: pull icon code and set icon of button
+
+        btnArray[btnRow][btnCol].setText(activeDate);
+        //Toast.makeText(this,"Date is: " + activeDate, Toast.LENGTH_SHORT).show();
     }
 
     @Override
