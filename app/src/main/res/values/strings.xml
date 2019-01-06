@@ -1,17 +1,7 @@
 <resources>
-    <string name="app_name">nfp</string>
+    <string name="app_name">NFP Tracker</string>
     <string name="large_text">
         "Material is the metaphor.\n\n"
-eaning they change elevation in response "
-        "to user input (e.g., normal, focused, and pressed) or system events. These elevation "
-        "changes are consistently implemented using dynamic elevation offsets.\n"
-        "Dynamic elevation offsets are the goal elevation that a component moves towards, relative "
-        "to the component’s resting state. They ensure that elevation changes are consistent "
-        "across actions and component types. For example, all components that lift on press have "
-        "the same elevation change relative to their resting elevation.\n"
-        "Once the input event is completed or cancelled, the component will return to its resting "
-        "elevation.\n\n"
-
         "Avoiding elevation interference.\n\n"
 
         "Components with responsive elevations may encounter other components as they move between "

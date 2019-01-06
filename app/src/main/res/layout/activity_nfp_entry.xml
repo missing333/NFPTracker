@@ -4,17 +4,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".NfpEntry"
-    android:theme="@style/AppTheme.Modal.EasyRemove">
+    android:theme="@style/AppTheme.Modal.EasyRemove"
+    tools:context=".NfpEntry">
 
     <ScrollView
         android:id="@+id/scrollView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         android:clipToPadding="true"
         android:fillViewport="true"
         android:gravity="center"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/save"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <TableLayout
             android:layout_width="match_parent"
@@ -53,39 +59,61 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/mucuscodelabel" />
+                    android:gravity="center_horizontal"
+                    android:text="@string/mucuscodelabel"
+                    android:textColor="@color/colorAccent" />
 
                 <TextView
                     android:id="@+id/mucusFreqLabel"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/mucus_frequency" />
-            </TableRow>
-
-            <TableRow android:gravity="center">
-                <Spinner
-                    android:id="@+id/mucusCode"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:entries="@array/mucusCodesArray" />
-
-                <Spinner
-                    android:id="@+id/mucusFreq"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:entries="@array/mucusFreqArray" />
+                    android:gravity="center_horizontal"
+                    android:text="@string/mucus_frequency"
+                    android:textColor="@color/colorAccent" />
             </TableRow>
 
             <TableRow
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:gravity="center_horizontal">
+                android:gravity="center">
+
+            </TableRow>
+
+            <TableRow
+                android:gravity="center"
+                android:paddingBottom="25dp">
+
+                <Spinner
+                    android:id="@+id/mucusCode"
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_weight="1"
+                    android:background="@drawable/back"
+                    android:entries="@array/mucusCodesArray"
+                    android:gravity="center"
+                    android:padding="5dp" />
+
+                <Spinner
+                    android:id="@+id/mucusFreq"
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/back"
+                    android:entries="@array/mucusFreqArray"
+                    android:gravity="center"
+                    android:padding="5dp" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_horizontal"
+                android:paddingBottom="25dp">
 
                 <com.google.android.flexbox.FlexboxLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:alignContent="stretch"
                     app:alignItems="center"
@@ -97,31 +125,65 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="c" />
+                        android:text="Cloudy" />
 
                     <CheckBox
                         android:id="@+id/k"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="k" />
+                        android:text="Clear" />
+
+                    <CheckBox
+                        android:id="@+id/y"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Yellow" />
+
+                    <CheckBox
+                        android:id="@+id/g"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Gummy" />
+
+                    <CheckBox
+                        android:id="@+id/p"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Pasty" />
 
                     <CheckBox
                         android:id="@+id/L"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="L" />
+                        android:text="Lubricative" />
+
+                    <CheckBox
+                        android:id="@+id/d"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Damp" />
 
                     <CheckBox
                         android:id="@+id/w"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="w" />
+                        android:text="Wet" />
+
+                    <CheckBox
+                        android:id="@+id/s"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Shiny" />
 
                 </com.google.android.flexbox.FlexboxLayout>
-
             </TableRow>
 
             <TableRow
@@ -136,24 +198,26 @@
 
             </TableRow>
 
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center">
-
-                <Button
-                    android:id="@+id/save"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/save"
-                    tools:layout_editor_absoluteX="99dp"
-                    tools:layout_editor_absoluteY="439dp" />
-            </TableRow>
-
-
         </TableLayout>
 
-
     </ScrollView>
+
+    <Button
+        android:id="@+id/save"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="8dp"
+        android:backgroundTint="@color/colorAccent"
+        android:text="@string/save"
+        android:textColor="@android:color/background_light"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/scrollView" />
+
 
 </android.support.constraint.ConstraintLayout>

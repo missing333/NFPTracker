@@ -136,13 +136,19 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         //Retrieve data in the intent
-        activeDate = data.getStringExtra("DATE");  //TODO: pull from calendar picker instead of this
-        int btnRow = data.getIntExtra("BUTTONROW", -1);
-        int btnCol = data.getIntExtra("BUTTONCOL", -1);
-        //TODO: pull code and populate text
-        //TODO: pull icon code and set icon of button
 
-        btnArray[btnRow][btnCol].setText(activeDate);
+        try {
+            activeDate = data.getStringExtra("DATE");
+            int btnRow = data.getIntExtra("BUTTONROW", -1);
+            int btnCol = data.getIntExtra("BUTTONCOL", -1);
+            //TODO: pull code and populate text
+            //TODO: pull icon code and set icon of button
+
+
+            btnArray[btnRow][btnCol].setText(activeDate);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         //Toast.makeText(this,"Date is: " + activeDate, Toast.LENGTH_SHORT).show();
     }
 
@@ -166,6 +172,7 @@ public class MainActivity extends AppCompatActivity {
         }
         else if (id == R.id.action_print) {
             printPDF();
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
