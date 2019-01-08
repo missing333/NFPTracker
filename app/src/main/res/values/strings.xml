@@ -1,4 +1,7 @@
 <resources>
+
+    <string name="versionCode">0.0.1</string>
+
     <string name="app_name">NFP Tracker</string>
     <string name="large_text">
         "Material is the metaphor.\n\n"
@@ -40,6 +43,26 @@
     <string name="red_level">Red Level</string>
     <string name="intercourse">Intercourse</string>
     <string name="sticker">sticker</string>
+    <string name="sticker_selection">Sticker Selection</string>
+    <string name="peak">Peak</string>
+    <string name="_1">1</string>
+    <string name="_2">2</string>
+    <string name="_3">3</string>
+
+    <string name="version">App Version</string>
+
+    <string name="title_activity_settings">Notifications</string>
+
+    <!-- Example settings for Notifications -->
+    <string name="pref_header_notifications">Notifications</string>
+    <string name="pref_title_new_message_notifications">Send Daily Notification</string>
+    <string name="pref_title_ringtone">Ringtone</string>
+    <string name="pref_ringtone_silent">Silent</string>
+    <string name="pref_title_vibrate">Vibrate</string>
+    <string name="pref_timepicker">Select time for Notifications</string>
+
+    <!-- Strings for the actual notifications -->
+    <string name="notifTitle">Go to NFP chart</string>
 
 
 </resources>

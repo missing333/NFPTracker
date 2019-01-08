@@ -1,7 +1,10 @@
 package com.missing.nfp;
 
 import android.Manifest;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -10,27 +13,25 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.pdf.PdfDocument;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.StrictMode;
+import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Html;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.HorizontalScrollView;
-import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -40,6 +41,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -51,7 +55,6 @@ public class MainActivity extends AppCompatActivity {
     TableLayout tLayout;
     Intent intent;
     String activeDate;
-    String activeCode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,11 +62,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.table_main);
         tLayout = findViewById(R.id.tableLayout1);
 
-        populateCells();
+        getSupportActionBar().setTitle(Html.fromHtml("<font color=\"brown\">" + getString(R.string.app_name) + "</font>"));
+
+        populateCells("fromPrefs");
+        startAlarming(this);
 
     }
 
-    private void populateCells() {
+    private void populateCells(String tag) {
         TableLayout table = findViewById(R.id.tableLayout1);
 
         //First Header Row
@@ -99,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
                     TableRow.LayoutParams.MATCH_PARENT,
                     1.0f
             );
-            params.setMargins(0,0 ,0 ,40 );
+            params.setMargins(0,0 ,0 ,60 );
             tableRow.setLayoutParams(params);
             table.addView(tableRow);
             for (int j = 0; j < btnArray[i].length; j++) {
@@ -110,30 +116,46 @@ public class MainActivity extends AppCompatActivity {
                 gd.setCornerRadius(5);
                 gd.setStroke(1, 0xFF000000);
                 btnArray[i][j].setBackground(gd);
-                btnArray[i][j].setPadding(-25, -5,-25 ,0 );
+                btnArray[i][j].setPadding(10, -5,10 ,0 );
 
-                SharedPreferences prefs = getSharedPreferences("Settings", MODE_PRIVATE);
-                String savedDate = prefs.getString("r"+i+"c"+j+"date", null);
-                String savedCode = prefs.getString("r"+i+"c"+j+"code", null);
-                String savedComments = prefs.getString("r"+i+"c"+j+"comments", null);
-                int savedSticker = prefs.getInt("r"+i+"c"+j+"sticker", 0);
-                Log.d("prefs", savedCode + ", " + savedComments + ", " + savedSticker);
-                String combined = savedDate;
 
-                if (savedCode != null) {
-                    combined += "\n" + savedCode;
+                if (tag.equals("reset")){
+                    SharedPreferences.Editor editor = getSharedPreferences("Settings", MODE_PRIVATE).edit();
+                    editor.putString("r"+i+"c"+j+"date", null);
+                    editor.putString("r"+i+"c"+j+"code", null);
+                    editor.putString("r"+i+"c"+j+"comments", null);
+                    editor.putInt("r"+i+"c"+j+"sticker", 0);
+                    editor.putInt("r"+i+"c"+j+"stickerButton", 0);
+                    editor.apply();
+                    btnArray[i][j].setText("");
+                    btnArray[i][j].setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
                 }
-                if (savedComments != null) {
-                    combined += "\n" + savedComments;
+                else{
+                    //pull from preferences
+                    SharedPreferences prefs = getSharedPreferences("Settings", MODE_PRIVATE);
+                    String savedDate = prefs.getString("r"+i+"c"+j+"date", null);
+                    String savedCode = prefs.getString("r"+i+"c"+j+"code", null);
+                    String savedComments = prefs.getString("r"+i+"c"+j+"comments", null);
+                    int savedSticker = prefs.getInt("r"+i+"c"+j+"sticker", 0);
+                    Log.d("prefs", savedCode + ", " + savedComments + ", " + savedSticker);
+                    String combined = savedDate;
+
+                    if (savedCode != null) {
+                        combined += "\n" + savedCode;
+                    }
+                    if (savedComments != null) {
+                        combined += "\n" + savedComments;
+                    }
+
+                    //set button stuff
+                    Typeface font = Typeface.createFromAsset(getAssets(), "fonts/NotoSerifTC-Regular.otf");
+                    btnArray[i][j].setTypeface(font);
+                    btnArray[i][j].setTransformationMethod(null);
+                    btnArray[i][j].setText(combined);
+                    if (savedSticker != 0 ){
+                        btnArray[i][j].setCompoundDrawablesWithIntrinsicBounds(0, savedSticker, 0, 0);}
                 }
 
-                //set button stuff
-                Typeface font = Typeface.createFromAsset(getAssets(), "fonts/NotoSerifTC-Regular.otf");
-                btnArray[i][j].setTypeface(font);
-                btnArray[i][j].setTransformationMethod(null);
-                btnArray[i][j].setText(combined);
-                if (savedSticker != 0){
-                    btnArray[i][j].setCompoundDrawablesWithIntrinsicBounds(0, savedSticker, 0, 0);}
 
                 final int finalJ = j;
                 final int finalI = i;
@@ -153,25 +175,29 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        //Retrieve data in the intent
 
-        try {
-            activeDate = data.getStringExtra("DATE");
-            int btnRow = data.getIntExtra("BUTTONROW", -1);
-            int btnCol = data.getIntExtra("BUTTONCOL", -1);
-            String code = data.getStringExtra("CODE");
-            int stickerID = data.getIntExtra("STICKERID", 0);
 
-            btnArray[btnRow][btnCol].setCompoundDrawablesWithIntrinsicBounds(0, stickerID, 0, 0);
-            String combined = activeDate +"\n" +code;
-            Typeface font = Typeface.createFromAsset(getAssets(), "fonts/NotoSerifTC-Regular.otf");
-            btnArray[btnRow][btnCol].setTypeface(font);
-            btnArray[btnRow][btnCol].setTransformationMethod(null);
-            btnArray[btnRow][btnCol].setText(combined);
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (requestCode == 1) {
+            //Retrieve nfp entry data
+            try {
+                activeDate = data.getStringExtra("DATE");
+                int btnRow = data.getIntExtra("BUTTONROW", -1);
+                int btnCol = data.getIntExtra("BUTTONCOL", -1);
+                String code = data.getStringExtra("CODE");
+                int stickerID = data.getIntExtra("STICKERID", 0);
+
+                btnArray[btnRow][btnCol].setCompoundDrawablesWithIntrinsicBounds(0, stickerID, 0, 0);
+                String combined = activeDate +"\n" +code;
+                Typeface font = Typeface.createFromAsset(getAssets(), "fonts/NotoSerifTC-Regular.otf");
+                btnArray[btnRow][btnCol].setTypeface(font);
+                btnArray[btnRow][btnCol].setTransformationMethod(null);
+                btnArray[btnRow][btnCol].setText(combined);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else if (requestCode == 2 ){
+            printPDF();
         }
-        //Toast.makeText(this,"Date is: " + activeDate, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -190,10 +216,37 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Intent intent = new Intent(MainActivity.this, NotifSettings.class);
+            startActivity(intent);
             return true;
         }
         else if (id == R.id.action_print) {
             printPDF();
+            return true;
+        }
+        else if (id == R.id.action_clearAll) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setCancelable(true);
+            builder.setTitle("Clear Everything?");
+            builder.setMessage("This will delete all information in your chart.  Are you sure you want to continue?");
+            builder.setPositiveButton("Confirm",
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            //continue deleting
+                            tLayout.removeAllViews();
+                            populateCells("reset");
+                        }
+                    });
+            builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    //cancel delete
+                }
+            });
+            AlertDialog dialog = builder.create();
+            dialog.show();
+
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -211,17 +264,19 @@ public class MainActivity extends AppCompatActivity {
             // request the permission
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    1);
+                    2);
 
+
+            Toast.makeText(this,"Please Print again after you grant permission" , Toast.LENGTH_LONG).show();
         }
         else {
-            // Permission has already been granted
+            //Permission has already been granted
             //start creating PDF here.
             String extstoragedir = Environment.getExternalStorageDirectory().toString();
             File fol = new File(extstoragedir, "NFPapp");
             File folder=new File(fol,"pdf archive");
             if(!folder.exists()) {
-                boolean bool = folder.mkdirs();
+                folder.mkdirs();
             }
             try {
                 final File file = new File(folder, "sample.pdf");
@@ -268,5 +323,43 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
+    }
+
+
+    public static void startAlarming(Context context) {
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
+        Boolean notifPref = sharedPref.getBoolean("notifications_new_message", true);
+
+        if (notifPref == true) {
+            //daily notifications
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(System.currentTimeMillis());
+
+            String timePref = sharedPref.getString("timePref_Key", "7:0");
+            String[] separated = timePref.split(":");
+            int hour = Integer.parseInt(separated[0]);
+            int min = Integer.parseInt(separated[1]);
+
+            calendar.set(Calendar.HOUR_OF_DAY, hour);
+            calendar.set(Calendar.MINUTE, min);
+            calendar.set(Calendar.SECOND, 0);
+            if (calendar.getTime().compareTo(new Date()) < 0) {
+                calendar.add(Calendar.DAY_OF_MONTH, 1);
+                Log.d("nfpNotifs", "added 1 day since alarm was set to the past");
+            }
+
+            Intent intent1 = new Intent(context, MyReceiver.class);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent1, PendingIntent.FLAG_UPDATE_CURRENT);
+
+            AlarmManager am = (AlarmManager) context.getSystemService(ALARM_SERVICE);
+            am.setInexactRepeating(AlarmManager.RTC, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+            //am.setExactAndAllowWhileIdle(AlarmManager.RTC, calendar.getTimeInMillis(), pendingIntent);
+
+            SimpleDateFormat format = new SimpleDateFormat("EEEE, MMMM d, yyyy 'at' h:mm a");
+            Log.d("nfpNotifs", "I am going to send a notif at " + format.format(calendar.getTime()));
+            //Toast.makeText(context, "Next notification at "+format.format(calendar.getTime()), Toast.LENGTH_LONG).show();
+        } else {
+            Log.d("nfpNotifs", "I am NOT going to send notifications.");
+        }
     }
 }
