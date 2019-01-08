@@ -27,6 +27,19 @@
     <string name="save">Save</string>
     <string name="mucus_frequency">Mucus Frequency</string>
     <string name="mucuscodelabel">Mucus Code</string>
+    <string name="cloudy">Cloudy</string>
+    <string name="clear">Clear</string>
+    <string name="yellow">Yellow</string>
+    <string name="gummy">Gummy</string>
+    <string name="pasty">Pasty</string>
+    <string name="lubricative">Lubricative</string>
+    <string name="damp">Damp</string>
+    <string name="wet">Wet</string>
+    <string name="shiny">Shiny</string>
+    <string name="comments">Comments</string>
+    <string name="red_level">Red Level</string>
+    <string name="intercourse">Intercourse</string>
+    <string name="sticker">sticker</string>
 
 
 </resources>

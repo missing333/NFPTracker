@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
         tLayout = findViewById(R.id.tableLayout1);
 
 
+        //TODO: save cell data
 
         //To switch to RecycleView, go to manifest, change default activity to MainActRecycleView instead.
 
@@ -98,24 +99,23 @@ public class MainActivity extends AppCompatActivity {
         //All Subsequent Rows
         for (int i = 0; i < btnArray.length; i++) {
             tableRow = new TableRow(this);
-            tableRow.setLayoutParams(new TableLayout.LayoutParams(
-                    TableLayout.LayoutParams.WRAP_CONTENT,
-                    TableLayout.LayoutParams.MATCH_PARENT,
+            TableRow.LayoutParams params = new TableRow.LayoutParams(
+                    TableRow.LayoutParams.WRAP_CONTENT,
+                    TableRow.LayoutParams.MATCH_PARENT,
                     1.0f
-            ));
+            );
+            params.setMargins(0,0 ,0 ,40 );
+            tableRow.setLayoutParams(params);
             table.addView(tableRow);
             for (int j = 0; j < btnArray[i].length; j++) {
                 btnArray[i][j] = new Button(this);
-                btnArray[i][j].setLayoutParams(new TableRow.LayoutParams(
-                        TableRow.LayoutParams.WRAP_CONTENT,
-                        TableRow.LayoutParams.MATCH_PARENT,
-                        1.0f
-                ));
+                btnArray[i][j].setLayoutParams(params);
                 GradientDrawable gd = new GradientDrawable();
                 gd.setColor(0xFFFFFFFF); // Changes this drawbale to use a single color instead of a gradient
                 gd.setCornerRadius(5);
                 gd.setStroke(1, 0xFF000000);
                 btnArray[i][j].setBackground(gd);
+                btnArray[i][j].setPadding(-25, -5,-25 ,0 );
 
                 final int finalJ = j;
                 final int finalI = i;
@@ -141,11 +141,15 @@ public class MainActivity extends AppCompatActivity {
             activeDate = data.getStringExtra("DATE");
             int btnRow = data.getIntExtra("BUTTONROW", -1);
             int btnCol = data.getIntExtra("BUTTONCOL", -1);
-            //TODO: pull code and populate text
-            //TODO: pull icon code and set icon of button
+            String code = data.getStringExtra("CODE");
+            int stickerID = data.getIntExtra("STICKERID", 0);
 
-
-            btnArray[btnRow][btnCol].setText(activeDate);
+            btnArray[btnRow][btnCol].setCompoundDrawablesWithIntrinsicBounds(0, stickerID, 0, 0);
+            String combined = activeDate +"\n" +code;
+            Typeface font = Typeface.createFromAsset(getAssets(), "fonts/NotoSerifTC-Regular.otf");
+            btnArray[btnRow][btnCol].setTypeface(font);
+            btnArray[btnRow][btnCol].setTransformationMethod(null);
+            btnArray[btnRow][btnCol].setText(combined);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -9,13 +9,15 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CalendarView;
-import android.widget.EditText;
+import android.widget.CheckBox;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
+import java.util.Locale;
 
 public class NfpEntry extends AppCompatActivity {
 
@@ -30,40 +32,36 @@ public class NfpEntry extends AppCompatActivity {
         final int r = getIntent().getIntExtra("BUTTONROW", -1);
         final int c = getIntent().getIntExtra("BUTTONCOL", -1);
 
+        ////Set activity to smaller 'popup' window
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
-
         int width = dm.widthPixels;
         int height = dm.heightPixels;
         float pct = (float) 0.8;
         getWindow().setLayout((int) (width * pct), (int) (height * pct));
 
-
+        ////get date
         date = findViewById(R.id.calendarView);
         Calendar today = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("M/d");
+        SimpleDateFormat sdf = new SimpleDateFormat("M/d", Locale.US);
         selectedDate = sdf.format(today.getTime());
         date.setOnDateChangeListener(myCalendarListener);
 
-
-
-
+        ////set Spinners to Centered Text
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
                 this, R.array.mucusCodesArray,R.layout.spinner_center_item);
-        // set whatever dropdown resource you want
         adapter.setDropDownViewResource(R.layout.spinner_center_item);
-
         Spinner mCodes = findViewById(R.id.mucusCode);
         mCodes.setAdapter(adapter);
-
         adapter = ArrayAdapter.createFromResource(
                 this, R.array.mucusFreqArray,R.layout.spinner_center_item);
-        // set whatever dropdown resource you want
         adapter.setDropDownViewResource(R.layout.spinner_center_item);
         Spinner mFreqs = findViewById(R.id.mucusFreq);
         mFreqs.setAdapter(adapter);
 
 
+
+        //effects to happen when saving.
         Button save = findViewById(R.id.save);
         save.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,10 +71,174 @@ public class NfpEntry extends AppCompatActivity {
                 intent.putExtra("DATE", selectedDate);
                 intent.putExtra("BUTTONROW",r);
                 intent.putExtra("BUTTONCOL",c);
+                intent.putExtra("CODE", generateFinalCode());
+                intent.putExtra("STICKERID", getStickerID());
                 setResult(1, intent); //The data you want to send back
                 finish();
             }
         });
+    }
+
+    private int getStickerID() {
+        RadioGroup radioGroup = findViewById(R.id.stickerGroup);
+        Log.d("codeSticker",radioGroup.getCheckedRadioButtonId()+"" );
+
+        int code = 0;
+        switch (radioGroup.getCheckedRadioButtonId()){
+            case 2131296353:
+                code = getApplicationContext().getResources().getIdentifier("sticker_green", "drawable", getPackageName());
+                break;
+            case 2131296510:
+                code = getApplicationContext().getResources().getIdentifier("sticker_yellow", "drawable", getPackageName());
+                break;
+            case 2131296414:
+                code = getApplicationContext().getResources().getIdentifier("sticker_red", "drawable", getPackageName());
+                break;
+            case 2131296294:
+                code = getApplicationContext().getResources().getIdentifier("sticker_baby_green", "drawable", getPackageName());
+                break;
+            case 2131296295:
+                code = getApplicationContext().getResources().getIdentifier("sticker_baby_yellow", "drawable", getPackageName());
+                break;
+            case 2131296293:
+                code = getApplicationContext().getResources().getIdentifier("sticker_baby", "drawable", getPackageName());
+                break;
+        }
+        return code;
+    }
+
+    private String generateFinalCode() {
+        String code="";
+        Spinner mCode = findViewById(R.id.mucusCode);
+        Spinner mRedCode = findViewById(R.id.redCode);
+        Spinner mFreq = findViewById(R.id.mucusFreq);
+        CheckBox c = findViewById(R.id.c);
+        CheckBox k = findViewById(R.id.k);
+        CheckBox y = findViewById(R.id.y);
+        CheckBox g = findViewById(R.id.g);
+        CheckBox p = findViewById(R.id.p);
+        CheckBox l = findViewById(R.id.L);
+        CheckBox d = findViewById(R.id.d);
+        CheckBox w = findViewById(R.id.w);
+        CheckBox s = findViewById(R.id.s);
+        CheckBox i = findViewById(R.id.Intercourse);
+        RadioGroup peakGroup = findViewById(R.id.peakGroup);
+        RadioButton peak = findViewById(R.id.peak);
+        RadioButton peak1 = findViewById(R.id.p1);
+        RadioButton peak2 = findViewById(R.id.p2);
+        RadioButton peak3 = findViewById(R.id.p3);
+        TextView comments = findViewById(R.id.comments);
+
+
+        switch (mRedCode.getSelectedItemPosition()){
+            case 0:
+                break;
+            case 1:
+                code += "B ";
+                break;
+            case 2:
+                code += "VLR ";
+                break;
+            case 3:
+                code += "LR ";
+                break;
+            case 4:
+                code += "MR ";
+                break;
+            case 5:
+                code += "HR ";
+                break;
+
+            default:
+                break;
+        }
+
+        switch (mCode.getSelectedItemPosition()){
+            case 0:
+                break;
+            case 1:
+                code += "0";
+                break;
+            case 2:
+                code += "2";
+                break;
+            case 3:
+                code += "4";
+                break;
+            case 4:
+                code += "6";
+                break;
+            case 5:
+                code += "8";
+                break;
+            case 6:
+                code += "10";
+                break;
+
+            default:
+                break;
+        }
+
+
+        if(c.isChecked()){ code += "c"; }
+        if(k.isChecked()){ code += "k"; }
+        if(y.isChecked()){ code += "y"; }
+        if(g.isChecked()){ code += "g"; }
+        if(p.isChecked()){ code += "p"; }
+        if(d.isChecked()){ code += "D"; }
+        if(w.isChecked()){ code += "W"; }
+        if(s.isChecked()){ code += "S"; }
+        if(l.isChecked()){ code += "L"; }
+
+        switch (mFreq.getSelectedItemPosition()){
+            case 0:
+                break;
+            case 1:
+                code += " x1";
+                break;
+            case 2:
+                code += " x2";
+                break;
+            case 3:
+                code += " x3";
+                break;
+            case 4:
+                code += " AD";
+                break;
+
+            default:
+                break;
+        }
+
+
+        //add new line if mucus code is present, then add I if that's checked
+        if(i.isChecked()){
+            if (code.length()>0) {code += "\n";}
+            code += "I";
+        }
+
+        if(peak.isChecked()){
+            if (code.length()>0) {code += "\n";}
+            code += "P"; }
+        else if(peak1.isChecked()){
+            if (code.length()>0) {code += "\n";}
+            code += "1"; }
+        else if(peak2.isChecked()){
+            if (code.length()>0) {code += "\n";}
+            code += "2"; }
+        else if(peak3.isChecked()){
+            if (code.length()>0) {code += "\n";}
+            code += "3"; }
+
+        //add new line if anything else is present, then add comments, if any.
+        if (comments.length() > 0){
+            if (code.length()>0) {code += "\n";}
+            code += comments.getText();
+        }
+
+
+        Log.d("codeMucus",code);
+        return code;
     }
 
     CalendarView.OnDateChangeListener myCalendarListener = new CalendarView.OnDateChangeListener(){

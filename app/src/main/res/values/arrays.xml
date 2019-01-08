@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="mucusCodesArray">
+        <item></item>
         <item>0 - Dry</item>
         <item>2 - Damp w/o Lubrication</item>
         <item>4 - Shiny w/o Lubrication</item>
@@ -15,5 +16,14 @@
         <item>x2</item>
         <item>x3</item>
         <item>all day</item>
+    </string-array>
+
+    <string-array name="redCodeArray">
+        <item></item>
+        <item>Brown</item>
+        <item>Very Light Red</item>
+        <item>Light Red</item>
+        <item>Medium Red</item>
+        <item>Heavy Red</item>
     </string-array>
 </resources>
