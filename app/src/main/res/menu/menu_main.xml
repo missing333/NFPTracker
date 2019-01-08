@@ -9,6 +9,12 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/action_clearAll"
+        android:orderInCategory="100"
+        android:title="Clear All Fields"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/action_print"
         android:orderInCategory="100"
         android:title="@string/print"

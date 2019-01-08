@@ -25,6 +25,7 @@ public class NfpEntry extends AppCompatActivity {
 
     CalendarView date;
     String selectedDate;
+    long dateInMillis;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +46,7 @@ public class NfpEntry extends AppCompatActivity {
         ////get date
         date = findViewById(R.id.calendarView);
         Calendar today = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("M/d", Locale.US);
+        SimpleDateFormat sdf = new SimpleDateFormat("M/d/YYYY", Locale.US);
         selectedDate = sdf.format(today.getTime());
         date.setOnDateChangeListener(myCalendarListener);
 
@@ -142,7 +143,6 @@ public class NfpEntry extends AppCompatActivity {
 
 
     private void restoreSelections(int row, int col) {
-        String code="";
         Spinner mCode = findViewById(R.id.mucusCode);
         Spinner mRedCode = findViewById(R.id.redCode);
         Spinner mFreq = findViewById(R.id.mucusFreq);
@@ -156,18 +156,36 @@ public class NfpEntry extends AppCompatActivity {
         CheckBox w = findViewById(R.id.w);
         CheckBox s = findViewById(R.id.s);
         CheckBox i = findViewById(R.id.Intercourse);
-        RadioGroup peakGroup = findViewById(R.id.peakGroup);
         RadioButton peak = findViewById(R.id.peak);
         RadioButton peak1 = findViewById(R.id.p1);
         RadioButton peak2 = findViewById(R.id.p2);
         RadioButton peak3 = findViewById(R.id.p3);
         TextView comments = findViewById(R.id.comments);
         RadioGroup stickerGroup = findViewById(R.id.stickerGroup);
+        CalendarView cal = findViewById(R.id.calendarView);
 
         SharedPreferences prefs = getSharedPreferences("Settings", MODE_PRIVATE);
+        String savedDate = prefs.getString("r"+row+"c"+col+"date", null);
         String savedCode = prefs.getString("r"+row+"c"+col+"code", null);
         String savedComments = prefs.getString("r"+row+"c"+col+"comments", null);
         int savedStickerButton = prefs.getInt("r"+row+"c"+col+"stickerButton", 0);
+
+        if (savedDate != null){
+            String parts[] = savedDate.split("/");
+
+            int day = Integer.parseInt(parts[1]);
+            int month = Integer.parseInt(parts[0])-1;  //because calendar months are from 0-11
+            int year = Integer.parseInt(parts[2]);
+
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(Calendar.YEAR, year);
+            calendar.set(Calendar.MONTH, month);
+            calendar.set(Calendar.DAY_OF_MONTH, day);
+
+            long milliTime = calendar.getTimeInMillis();
+            cal.setDate (milliTime, true, true);
+            selectedDate = savedDate;
+        }
 
         if (savedComments != null){
             comments.setText(savedComments);
@@ -175,6 +193,43 @@ public class NfpEntry extends AppCompatActivity {
 
         if (savedCode != null) {
             Log.d("prefs", "Loading code into views: " + savedCode);
+
+            if (savedCode.toLowerCase().contains("b")){
+                mRedCode.setSelection(1);
+            } else if (savedCode.toLowerCase().contains("vlr")){
+                mRedCode.setSelection(2);
+            } else if (savedCode.toLowerCase().contains("lr")){
+                mRedCode.setSelection(3);
+            } else if (savedCode.toLowerCase().contains("mr")){
+                mRedCode.setSelection(4);
+            } else if (savedCode.toLowerCase().contains("hr")){
+                mRedCode.setSelection(5);
+            }
+
+            if (savedCode.toLowerCase().contains("10")){
+                mCode.setSelection(6);
+            } else if (savedCode.toLowerCase().contains("8")){
+                mCode.setSelection(5);
+            } else if (savedCode.toLowerCase().contains("6")){
+                mCode.setSelection(4);
+            } else if (savedCode.toLowerCase().contains("4")){
+                mCode.setSelection(3);
+            } else if (savedCode.toLowerCase().contains("2")){
+                mCode.setSelection(2);
+            } else if (savedCode.toLowerCase().contains("0")){
+                mCode.setSelection(1);
+            }
+
+            if (savedCode.toLowerCase().contains("x1")){
+                mFreq.setSelection(1);
+            } else if (savedCode.toLowerCase().contains("x2")){
+                mFreq.setSelection(2);
+            } else if (savedCode.toLowerCase().contains("x3")){
+                mFreq.setSelection(3);
+            } else if (savedCode.toLowerCase().contains("ad")){
+                mFreq.setSelection(4);
+            }
+
             if (savedCode.toLowerCase().contains("c")){
                 c.setChecked(true);}
             if (savedCode.toLowerCase().contains("k")){
@@ -196,40 +251,53 @@ public class NfpEntry extends AppCompatActivity {
             if (savedCode.toLowerCase().contains("i")){
                 i.setChecked(true);}
 
+            //restore Peak, 1, 2, 3
+            if(savedCode.contains("P1")){
+                peak1.setChecked(true);
+            } else if(savedCode.contains("P2")){
+                peak2.setChecked(true);
+            } else if(savedCode.contains("P3")){
+                peak3.setChecked(true);
+            }else if(savedCode.contains("P")){
+                peak.setChecked(true);
+            }
         }
         if (savedStickerButton != 0){
             Log.d("prefs", "Loading sticker into views: " + savedStickerButton);
             RadioButton tempB = stickerGroup.findViewById(savedStickerButton);
-            tempB.setChecked(true);
+            try {
+                tempB.setChecked(true);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
+
+
+
 
     }
 
     private int getStickerID() {
-        RadioGroup radioGroup = findViewById(R.id.stickerGroup);
-        Log.d("codeSticker",radioGroup.getCheckedRadioButtonId()+"" );
+        RadioButton green = findViewById(R.id.green);
+        RadioButton yellow = findViewById(R.id.yellow);
+        RadioButton red = findViewById(R.id.red);
+        RadioButton babyGreen = findViewById(R.id.babyGreen);
+        RadioButton babyYellow = findViewById(R.id.babyYellow);
+        RadioButton baby = findViewById(R.id.baby);
 
         int code = 0;
-        switch (radioGroup.getCheckedRadioButtonId()){
-            case 2131296353:
-                code = getApplicationContext().getResources().getIdentifier("sticker_green", "drawable", getPackageName());
-                break;
-            case 2131296511:
-                code = getApplicationContext().getResources().getIdentifier("sticker_yellow", "drawable", getPackageName());
-                break;
-            case 2131296415:
-                code = getApplicationContext().getResources().getIdentifier("sticker_red", "drawable", getPackageName());
-                break;
-            case 2131296294:
-                code = getApplicationContext().getResources().getIdentifier("sticker_baby_green", "drawable", getPackageName());
-                break;
-            case 2131296295:
-                code = getApplicationContext().getResources().getIdentifier("sticker_baby_yellow", "drawable", getPackageName());
-                break;
-            case 2131296293:
-                code = getApplicationContext().getResources().getIdentifier("sticker_baby", "drawable", getPackageName());
-                break;
-        }
+        if (green.isChecked())
+            code = getApplicationContext().getResources().getIdentifier("sticker_green", "drawable", getPackageName());
+        else if (yellow.isChecked())
+            code = getApplicationContext().getResources().getIdentifier("sticker_yellow", "drawable", getPackageName());
+        else if (red.isChecked())
+            code = getApplicationContext().getResources().getIdentifier("sticker_red", "drawable", getPackageName());
+        else if (babyGreen.isChecked())
+            code = getApplicationContext().getResources().getIdentifier("sticker_baby_green", "drawable", getPackageName());
+        else if (babyYellow.isChecked())
+            code = getApplicationContext().getResources().getIdentifier("sticker_baby_yellow", "drawable", getPackageName());
+        else if (baby.isChecked())
+            code = getApplicationContext().getResources().getIdentifier("sticker_baby", "drawable", getPackageName());
         return code;
     }
 
@@ -348,13 +416,13 @@ public class NfpEntry extends AppCompatActivity {
             code += "P"; }
         else if(peak1.isChecked()){
             if (code.length()>0) {code += "\n";}
-            code += "1"; }
+            code += "P1"; }
         else if(peak2.isChecked()){
             if (code.length()>0) {code += "\n";}
-            code += "2"; }
+            code += "P2"; }
         else if(peak3.isChecked()){
             if (code.length()>0) {code += "\n";}
-            code += "3"; }
+            code += "P3"; }
 
 
         Log.d("codeMucus",code);
@@ -367,7 +435,9 @@ public class NfpEntry extends AppCompatActivity {
 
             // add one because month starts at 0
             month = month + 1;
-            selectedDate = month+"/"+day;
+            selectedDate = month+"/"+day+"/"+year;
+            dateInMillis = view.getDate();
+            Log.d("dateCalc", "date changed to: " + dateInMillis + ", aka " + selectedDate);
             //Toast.makeText(getApplicationContext(),selectedDate,Toast.LENGTH_SHORT).show();
         }
     };
