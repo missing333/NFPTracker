@@ -3,6 +3,7 @@ package com.missing.nfp;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -58,13 +59,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.table_main);
         tLayout = findViewById(R.id.tableLayout1);
 
-
-        //TODO: save cell data
-
-        //To switch to RecycleView, go to manifest, change default activity to MainActRecycleView instead.
-
         populateCells();
-
 
     }
 
@@ -116,6 +111,29 @@ public class MainActivity extends AppCompatActivity {
                 gd.setStroke(1, 0xFF000000);
                 btnArray[i][j].setBackground(gd);
                 btnArray[i][j].setPadding(-25, -5,-25 ,0 );
+
+                SharedPreferences prefs = getSharedPreferences("Settings", MODE_PRIVATE);
+                String savedDate = prefs.getString("r"+i+"c"+j+"date", null);
+                String savedCode = prefs.getString("r"+i+"c"+j+"code", null);
+                String savedComments = prefs.getString("r"+i+"c"+j+"comments", null);
+                int savedSticker = prefs.getInt("r"+i+"c"+j+"sticker", 0);
+                Log.d("prefs", savedCode + ", " + savedComments + ", " + savedSticker);
+                String combined = savedDate;
+
+                if (savedCode != null) {
+                    combined += "\n" + savedCode;
+                }
+                if (savedComments != null) {
+                    combined += "\n" + savedComments;
+                }
+
+                //set button stuff
+                Typeface font = Typeface.createFromAsset(getAssets(), "fonts/NotoSerifTC-Regular.otf");
+                btnArray[i][j].setTypeface(font);
+                btnArray[i][j].setTransformationMethod(null);
+                btnArray[i][j].setText(combined);
+                if (savedSticker != 0){
+                    btnArray[i][j].setCompoundDrawablesWithIntrinsicBounds(0, savedSticker, 0, 0);}
 
                 final int finalJ = j;
                 final int finalI = i;
@@ -198,66 +216,57 @@ public class MainActivity extends AppCompatActivity {
         }
         else {
             // Permission has already been granted
-        }
+            //start creating PDF here.
+            String extstoragedir = Environment.getExternalStorageDirectory().toString();
+            File fol = new File(extstoragedir, "NFPapp");
+            File folder=new File(fol,"pdf archive");
+            if(!folder.exists()) {
+                boolean bool = folder.mkdirs();
+            }
+            try {
+                final File file = new File(folder, "sample.pdf");
+                file.createNewFile();
+                FileOutputStream fOut = new FileOutputStream(file);
 
 
+                Bitmap bm = PDFTools.getScreenshotFromTableView(tLayout);
 
-        //start creating PDF here.
-        Toast.makeText(this,"Creating PDF..." ,Toast.LENGTH_SHORT ).show();
-
-        String extstoragedir = Environment.getExternalStorageDirectory().toString();
-        File fol = new File(extstoragedir, "NFPapp");
-        File folder=new File(fol,"pdf archive");
-        if(!folder.exists()) {
-            boolean bool = folder.mkdirs();
-        }
-        try {
-            final File file = new File(folder, "sample.pdf");
-            file.createNewFile();
-            FileOutputStream fOut = new FileOutputStream(file);
+                PdfDocument document = new PdfDocument();
+                PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(bm.getWidth()+100, bm.getHeight()+100, 1).create();
+                PdfDocument.Page page = document.startPage(pageInfo);
 
 
-            Bitmap bm = PDFTools.getScreenshotFromTableView(tLayout);
-
-            PdfDocument document = new PdfDocument();
-            PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(bm.getWidth()+100, bm.getHeight()+100, 1).create();
-            PdfDocument.Page page = document.startPage(pageInfo);
+                // draw table on the page
+                Canvas canvas = page.getCanvas();
+                canvas.drawBitmap(bm, null, new Rect(50, 50, bm.getWidth(),bm.getHeight()), null);
 
 
-            // draw table on the page
-            Canvas canvas = page.getCanvas();
-            canvas.drawBitmap(bm, null, new Rect(50, 50, bm.getWidth(),bm.getHeight()), null);
+                // finish the page
+                document.finishPage(page);
+                // add more pages
+                // write the document content
+                document.writeTo(fOut);
+                document.close();
 
 
-
-
-
-
-            // finish the page
-            document.finishPage(page);
-            // add more pages
-            // write the document content
-            document.writeTo(fOut);
-            document.close();
-
-            Toast.makeText(this,"Done with PDF steps" ,Toast.LENGTH_SHORT ).show();
-
-            if(Build.VERSION.SDK_INT>=24){
-                try{
-                    Method m = StrictMode.class.getMethod("disableDeathOnFileUriExposure");
-                    m.invoke(null);
-                }catch(Exception e){
-                    e.printStackTrace();
+                if(Build.VERSION.SDK_INT>=24){
+                    try{
+                        Method m = StrictMode.class.getMethod("disableDeathOnFileUriExposure");
+                        m.invoke(null);
+                    }catch(Exception e){
+                        e.printStackTrace();
+                    }
                 }
+
+
+                PDFTools.openPDF(this, Uri.fromFile(file));
+            } catch (IOException e) {
+                e.printStackTrace();
             }
 
-
-            PDFTools.openPDF(this, Uri.fromFile(file));
-        } catch (IOException e) {
-            e.printStackTrace();
+            recreate();
         }
 
-        finish();
 
     }
 }

@@ -29,18 +29,6 @@
             <TableRow
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:gravity="center_horizontal">
-
-                <CalendarView
-                    android:id="@+id/calendarView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-            </TableRow>
-
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
                 android:gravity="center">
 
 
@@ -361,10 +349,23 @@
                     android:id="@+id/comments"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_margin="30dp"
                     android:ems="10"
                     android:hint="@string/comments"
                     android:importantForAutofill="no"
                     android:inputType="textMultiLine" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_horizontal">
+
+                <CalendarView
+                    android:id="@+id/calendarView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
             </TableRow>
 
         </TableLayout>
