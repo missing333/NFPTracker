@@ -44,6 +44,7 @@ import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -62,115 +63,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.table_main);
         tLayout = findViewById(R.id.tableLayout1);
 
-        getSupportActionBar().setTitle(Html.fromHtml("<font color=\"brown\">" + getString(R.string.app_name) + "</font>"));
 
         populateCells("fromPrefs");
-        startAlarming(this);
-
-    }
-
-    private void populateCells(String tag) {
-        TableLayout table = findViewById(R.id.tableLayout1);
-
-        //First Header Row
-        TableRow tableRow = new TableRow(this);
-        tableRow.setLayoutParams(new TableLayout.LayoutParams(
-                TableLayout.LayoutParams.WRAP_CONTENT,
-                TableLayout.LayoutParams.MATCH_PARENT,
-                1.0f
-        ));
-        table.addView(tableRow);
-        for (int col = 1; col < NUM_COLS + 1; col++) {
-            TextView label = new TextView(this);
-            label.setLayoutParams(new TableRow.LayoutParams(
-                    TableRow.LayoutParams.WRAP_CONTENT,
-                    TableRow.LayoutParams.MATCH_PARENT,
-                    1.0f
-            ));
-            label.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
-            label.setTextColor(Color.BLACK);
-            label.setTextSize(HEADER_TEXT_SIZE);
-            label.setTypeface(null, Typeface.BOLD);
-            label.setBackgroundResource(R.drawable.back);
-            label.setText(col + "");
-            tableRow.addView(label);
-        }
+        startAlarming(getApplicationContext());
 
 
-        //All Subsequent Rows
-        for (int i = 0; i < btnArray.length; i++) {
-            tableRow = new TableRow(this);
-            TableRow.LayoutParams params = new TableRow.LayoutParams(
-                    TableRow.LayoutParams.WRAP_CONTENT,
-                    TableRow.LayoutParams.MATCH_PARENT,
-                    1.0f
-            );
-            params.setMargins(0,0 ,0 ,60 );
-            tableRow.setLayoutParams(params);
-            table.addView(tableRow);
-            for (int j = 0; j < btnArray[i].length; j++) {
-                btnArray[i][j] = new Button(this);
-                btnArray[i][j].setLayoutParams(params);
-                GradientDrawable gd = new GradientDrawable();
-                gd.setColor(0xFFFFFFFF); // Changes this drawbale to use a single color instead of a gradient
-                gd.setCornerRadius(5);
-                gd.setStroke(1, 0xFF000000);
-                btnArray[i][j].setBackground(gd);
-                btnArray[i][j].setPadding(10, -5,10 ,0 );
 
-
-                if (tag.equals("reset")){
-                    SharedPreferences.Editor editor = getSharedPreferences("Settings", MODE_PRIVATE).edit();
-                    editor.putString("r"+i+"c"+j+"date", null);
-                    editor.putString("r"+i+"c"+j+"code", null);
-                    editor.putString("r"+i+"c"+j+"comments", null);
-                    editor.putInt("r"+i+"c"+j+"sticker", 0);
-                    editor.putInt("r"+i+"c"+j+"stickerButton", 0);
-                    editor.apply();
-                    btnArray[i][j].setText("");
-                    btnArray[i][j].setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
-                }
-                else{
-                    //pull from preferences
-                    SharedPreferences prefs = getSharedPreferences("Settings", MODE_PRIVATE);
-                    String savedDate = prefs.getString("r"+i+"c"+j+"date", null);
-                    String savedCode = prefs.getString("r"+i+"c"+j+"code", null);
-                    String savedComments = prefs.getString("r"+i+"c"+j+"comments", null);
-                    int savedSticker = prefs.getInt("r"+i+"c"+j+"sticker", 0);
-                    Log.d("prefs", savedCode + ", " + savedComments + ", " + savedSticker);
-                    String combined = savedDate;
-
-                    if (savedCode != null) {
-                        combined += "\n" + savedCode;
-                    }
-                    if (savedComments != null) {
-                        combined += "\n" + savedComments;
-                    }
-
-                    //set button stuff
-                    Typeface font = Typeface.createFromAsset(getAssets(), "fonts/NotoSerifTC-Regular.otf");
-                    btnArray[i][j].setTypeface(font);
-                    btnArray[i][j].setTransformationMethod(null);
-                    btnArray[i][j].setText(combined);
-                    if (savedSticker != 0 ){
-                        btnArray[i][j].setCompoundDrawablesWithIntrinsicBounds(0, savedSticker, 0, 0);}
-                }
-
-
-                final int finalJ = j;
-                final int finalI = i;
-                btnArray[i][j].setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        intent = new Intent(MainActivity.this, NfpEntry.class);
-                        intent.putExtra("BUTTONROW", finalI);
-                        intent.putExtra("BUTTONCOL", finalJ);
-                        startActivityForResult(intent, 1);
-                    }
-                });
-                tableRow.addView(btnArray[i][j]);
-            }
-        }
     }
 
     @Override
@@ -234,6 +132,9 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             //continue deleting
+                            SharedPreferences.Editor editor = getSharedPreferences("Settings", MODE_PRIVATE).edit();
+                            editor.putBoolean("legalNoticeUnderstood", false);
+                            editor.apply();
                             tLayout.removeAllViews();
                             populateCells("reset");
                         }
@@ -250,6 +151,140 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void populateCells(String tag) {
+        TableLayout table = findViewById(R.id.tableLayout1);
+
+        SharedPreferences prefs = getSharedPreferences("Settings", MODE_PRIVATE);
+        Boolean legalNoticeUnderstood = prefs.getBoolean("legalNoticeUnderstood", false);
+        if (!legalNoticeUnderstood) {
+            //Legal Notice:
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setCancelable(true);
+            builder.setTitle(R.string.legalLabel);
+            builder.setMessage(R.string.legal_Prompt);
+            builder.setPositiveButton(R.string.understand,
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            //continue deleting
+                            SharedPreferences.Editor editor = getSharedPreferences("Settings", MODE_PRIVATE).edit();
+                            editor.putBoolean("legalNoticeUnderstood", true);
+                            editor.apply();
+                        }
+                    });
+            builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    //close app
+                    finish();
+                }
+            });
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        }
+
+
+        //First Header Row
+        TableRow tableRow = new TableRow(this);
+        tableRow.setLayoutParams(new TableLayout.LayoutParams(
+                TableLayout.LayoutParams.WRAP_CONTENT,
+                TableLayout.LayoutParams.MATCH_PARENT,
+                1.0f
+        ));
+        table.addView(tableRow);
+        for (int col = 1; col < NUM_COLS + 1; col++) {
+            TextView label = new TextView(this);
+            label.setLayoutParams(new TableRow.LayoutParams(
+                    TableRow.LayoutParams.WRAP_CONTENT,
+                    TableRow.LayoutParams.MATCH_PARENT,
+                    1.0f
+            ));
+            label.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
+            label.setTextColor(Color.BLACK);
+            label.setTextSize(HEADER_TEXT_SIZE);
+            label.setTypeface(null, Typeface.BOLD);
+            label.setBackgroundResource(R.drawable.back);
+            label.setText(col + "");
+            tableRow.addView(label);
+        }
+
+
+        //All Subsequent Rows
+        for (int i = 0; i < btnArray.length; i++) {
+            tableRow = new TableRow(this);
+            TableRow.LayoutParams params = new TableRow.LayoutParams(
+                    TableRow.LayoutParams.WRAP_CONTENT,
+                    TableRow.LayoutParams.MATCH_PARENT,
+                    1.0f
+            );
+            params.setMargins(0,0 ,0 ,60 );
+            tableRow.setLayoutParams(params);
+            table.addView(tableRow);
+            for (int j = 0; j < btnArray[i].length; j++) {
+                btnArray[i][j] = new Button(this);
+                btnArray[i][j].setLayoutParams(params);
+                GradientDrawable gd = new GradientDrawable();
+                gd.setColor(0xFFFFFFFF); // Changes this drawbale to use a single color instead of a gradient
+                gd.setCornerRadius(5);
+                gd.setStroke(1, 0xFF000000);
+                btnArray[i][j].setBackground(gd);
+                btnArray[i][j].setPadding(10, -5,10 ,0 );
+
+
+                if (tag.equals("reset")){
+                    SharedPreferences.Editor editor = getSharedPreferences("Settings", MODE_PRIVATE).edit();
+                    editor.putString("r"+i+"c"+j+"date", null);
+                    editor.putString("r"+i+"c"+j+"code", null);
+                    editor.putString("r"+i+"c"+j+"comments", null);
+                    editor.putInt("r"+i+"c"+j+"sticker", 0);
+                    editor.putInt("r"+i+"c"+j+"stickerButton", 0);
+                    editor.apply();
+                    btnArray[i][j].setText("");
+                    btnArray[i][j].setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+                }
+                else{
+                    //pull from preferences
+                    prefs = getSharedPreferences("Settings", MODE_PRIVATE);
+                    String savedDate = prefs.getString("r"+i+"c"+j+"date", null);
+                    String savedCode = prefs.getString("r"+i+"c"+j+"code", null);
+                    String savedComments = prefs.getString("r"+i+"c"+j+"comments", null);
+                    int savedSticker = prefs.getInt("r"+i+"c"+j+"sticker", 0);
+                    Log.d("prefs", savedCode + ", " + savedComments + ", " + savedSticker);
+                    String combined = savedDate;
+
+                    if (savedCode != null) {
+                        combined += "\n" + savedCode;
+                    }
+                    if (savedComments != null) {
+                        combined += "\n" + savedComments;
+                    }
+
+                    //set button stuff
+                    Typeface font = Typeface.createFromAsset(getAssets(), "fonts/NotoSerifTC-Regular.otf");
+                    btnArray[i][j].setTypeface(font);
+                    btnArray[i][j].setTransformationMethod(null);
+                    btnArray[i][j].setText(combined);
+                    if (savedSticker != 0 ){
+                        btnArray[i][j].setCompoundDrawablesWithIntrinsicBounds(0, savedSticker, 0, 0);}
+                }
+
+
+                final int finalJ = j;
+                final int finalI = i;
+                btnArray[i][j].setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        intent = new Intent(MainActivity.this, NfpEntry.class);
+                        intent.putExtra("BUTTONROW", finalI);
+                        intent.putExtra("BUTTONCOL", finalJ);
+                        startActivityForResult(intent, 1);
+                    }
+                });
+                tableRow.addView(btnArray[i][j]);
+            }
+        }
     }
 
     private void printPDF() {
@@ -325,12 +360,11 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
     public static void startAlarming(Context context) {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
         Boolean notifPref = sharedPref.getBoolean("notifications_new_message", true);
 
-        if (notifPref == true) {
+        if (notifPref) {
             //daily notifications
             Calendar calendar = Calendar.getInstance();
             calendar.setTimeInMillis(System.currentTimeMillis());
@@ -355,7 +389,7 @@ public class MainActivity extends AppCompatActivity {
             am.setInexactRepeating(AlarmManager.RTC, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
             //am.setExactAndAllowWhileIdle(AlarmManager.RTC, calendar.getTimeInMillis(), pendingIntent);
 
-            SimpleDateFormat format = new SimpleDateFormat("EEEE, MMMM d, yyyy 'at' h:mm a");
+            SimpleDateFormat format = new SimpleDateFormat("EEEE, MMMM d, yyyy 'at' h:mm a", Locale.US);
             Log.d("nfpNotifs", "I am going to send a notif at " + format.format(calendar.getTime()));
             //Toast.makeText(context, "Next notification at "+format.format(calendar.getTime()), Toast.LENGTH_LONG).show();
         } else {

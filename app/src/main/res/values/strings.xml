@@ -65,4 +65,9 @@
     <string name="notifTitle">Go to NFP chart</string>
 
 
+    <string name="legal_Prompt">This app is merely to aid in tracking fertility indicators.  \n\n  We neither guarantee to avoid pregnancy, nor do we guarantee to achieve it.</string>
+    <string name="legalLabel">Legal Notice</string>
+    <string name="understand">I Understand</string>
+
+
 </resources>
