@@ -22,25 +22,7 @@ public class MyReceiver extends BroadcastReceiver {
 
         Log.d("nfpNotif", "Recieved intent...processing.");
 
-        //create random quote
-        String[] quotes = new String[]{
-                "Humility - Learn something new about 1 person.",
-                "Diligence - Read a book for 15 minutes.",
-                "Moderation - Sacrifice 1 snack today.",
-                "Chastity - Check behind you when opening doors today, and let someone else through first if they are behind you.",
-                "Patience - Wait an extra 10 minutes for something you enjoy or want.",
-                "Kindness - Tell someone that you appreciated talking to them.",
-                "Generosity - Give a compliment to 3 people.",
-                "Kindness - Talk with someone who is going through a rough time.",
-                "Generosity - Give a small donation to the next person who asks you for money.",
-                "Humility - Ask someone for help.",
-                "Moderation - Exercise/stretch for 10 minutes today.",
-                "Chastity - Ask someone about their favorite (food/hobby/vacation/etc.)",
-                "Diligence - Write 'I will grow in virtue today' 5 times.",
-                "Patience - Take 3 deep breaths the next time you get angry/frustrated, before doing anything else."
-        };
-        String randomQuote = quotes[(int) (Math.random() * quotes.length)];
-        randomQuote = "Click here to enter your NFP daily mucus reading.";
+        String notifText = "Click here to enter your daily mucus reading.";
 
 
 
@@ -81,11 +63,11 @@ public class MyReceiver extends BroadcastReceiver {
 
             builder.setContentTitle(aMessage)  // required
                     .setSmallIcon(R.drawable.notif_icon) // required
-                    .setStyle(new NotificationCompat.BigTextStyle().bigText(randomQuote)) // required
+                    .setStyle(new NotificationCompat.BigTextStyle().bigText(notifText)) // required
                     .setDefaults(NotificationCompat.DEFAULT_ALL)
                     .setAutoCancel(true)
                     .setContentIntent(pendingIntent)
-                    .setTicker(aMessage + randomQuote);
+                    .setTicker(aMessage + notifText);
         } else {
 
             builder = new NotificationCompat.Builder(context);
@@ -95,11 +77,11 @@ public class MyReceiver extends BroadcastReceiver {
 
             builder.setContentTitle(aMessage)                           // required
                     .setSmallIcon(R.drawable.notif_icon) // required
-                    .setStyle(new NotificationCompat.BigTextStyle().bigText(randomQuote))  // required
+                    .setStyle(new NotificationCompat.BigTextStyle().bigText(notifText))  // required
                     .setDefaults(Notification.DEFAULT_ALL)
                     .setAutoCancel(true)
                     .setContentIntent(pendingIntent)
-                    .setTicker(aMessage + randomQuote)
+                    .setTicker(aMessage + notifText)
                     .setVibrate(new long[]{100, 200})
                     .setPriority(Notification.PRIORITY_DEFAULT);
         }

@@ -19,6 +19,9 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.MessageQueue;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
@@ -31,7 +34,10 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
+import android.widget.HorizontalScrollView;
+import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -51,8 +57,8 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int NUM_ROWS = 6;
     private static final int NUM_COLS = 35;
-    private static final int HEADER_TEXT_SIZE = 30;
-    Button btnArray[][] = new Button[NUM_ROWS][NUM_COLS];
+    private static final int HEADER_TEXT_SIZE = 22;
+    Button[][] btnArray = new Button[NUM_ROWS][NUM_COLS];
     TableLayout tLayout;
     Intent intent;
     String activeDate;
@@ -63,10 +69,36 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.table_main);
         tLayout = findViewById(R.id.tableLayout1);
 
-
         populateCells("fromPrefs");
         startAlarming(getApplicationContext());
 
+
+
+    }
+
+    private void scrollToLastPickedCell() {
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                // Do something after 5s = 5000ms
+
+
+                SharedPreferences prefs = getSharedPreferences("Settings", MODE_PRIVATE);
+                final float lastX = prefs.getFloat("LASTX", 0);
+                final float lastY = prefs.getFloat("LASTY", 0);
+
+                //scroll horizontally **more important for this app
+                final HorizontalScrollView hv = findViewById(R.id.horizontalView);
+                hv.smoothScrollTo((int) lastX-200, (int) lastY); // these are your x and y coordinates
+
+
+                //scroll vertically
+                final ScrollView sc = findViewById(R.id.layout);
+                sc.smoothScrollTo((int) lastX-200, (int) lastY); // these are your x and y coordinates
+
+            }
+        }, 1000);
 
 
     }
@@ -123,34 +155,40 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
         else if (id == R.id.action_clearAll) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setCancelable(true);
-            builder.setTitle("Clear Everything?");
-            builder.setMessage("This will delete all information in your chart.  Are you sure you want to continue?");
-            builder.setPositiveButton("Confirm",
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            //continue deleting
-                            SharedPreferences.Editor editor = getSharedPreferences("Settings", MODE_PRIVATE).edit();
-                            editor.putBoolean("legalNoticeUnderstood", false);
-                            editor.apply();
-                            tLayout.removeAllViews();
-                            populateCells("reset");
-                        }
-                    });
-            builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    //cancel delete
-                }
-            });
-            AlertDialog dialog = builder.create();
-            dialog.show();
-
+            clearAllFields();
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void clearAllFields() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(true);
+        builder.setTitle("Clear Everything?");
+        builder.setMessage("This will delete all information in your chart.  Are you sure you want to continue?");
+        builder.setPositiveButton("Confirm",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //continue deleting
+                        SharedPreferences.Editor editor = getSharedPreferences("Settings", MODE_PRIVATE).edit();
+                        editor.putBoolean("legalNoticeUnderstood", false);
+                        editor.putFloat("LASTX", 0);
+                        editor.putFloat("LASTY", 0);
+                        editor.apply();
+                        tLayout.removeAllViews();
+                        populateCells("reset");
+                    }
+                });
+        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //cancel delete
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
     }
 
     private void populateCells(String tag) {
@@ -279,12 +317,18 @@ public class MainActivity extends AppCompatActivity {
                         intent = new Intent(MainActivity.this, NfpEntry.class);
                         intent.putExtra("BUTTONROW", finalI);
                         intent.putExtra("BUTTONCOL", finalJ);
+                        float testX = btnArray[finalI][finalJ].getX();
+                        float testY = 200 * finalI;
+                        intent.putExtra("BUTTONXPOS", testX);
+                        intent.putExtra("BUTTONYPOS", testY);
                         startActivityForResult(intent, 1);
                     }
                 });
                 tableRow.addView(btnArray[i][j]);
             }
         }
+
+        scrollToLastPickedCell();
     }
 
     private void printPDF() {

@@ -34,6 +34,8 @@ public class NfpEntry extends AppCompatActivity {
 
         final int r = getIntent().getIntExtra("BUTTONROW", -1);
         final int c = getIntent().getIntExtra("BUTTONCOL", -1);
+        final float lastX = getIntent().getFloatExtra("BUTTONXPOS", 0);
+        final float lastY = getIntent().getFloatExtra("BUTTONYPOS", 0);
 
         ////Set activity to smaller 'popup' window
         DisplayMetrics dm = new DisplayMetrics();
@@ -132,6 +134,8 @@ public class NfpEntry extends AppCompatActivity {
                 editor.putString("r"+r+"c"+c+"comments", comments);
                 editor.putInt("r"+r+"c"+c+"sticker", stickerID);
                 editor.putInt("r"+r+"c"+c+"stickerButton", radioGroup.getCheckedRadioButtonId());
+                editor.putFloat("LASTX", lastX);
+                editor.putFloat("LASTY", lastY);
                 editor.apply();
 
                 setResult(1, intent); //The data you want to send back
@@ -171,7 +175,7 @@ public class NfpEntry extends AppCompatActivity {
         int savedStickerButton = prefs.getInt("r"+row+"c"+col+"stickerButton", 0);
 
         if (savedDate != null){
-            String parts[] = savedDate.split("/");
+            String[] parts = savedDate.split("/");
 
             int day = Integer.parseInt(parts[1]);
             int month = Integer.parseInt(parts[0])-1;  //because calendar months are from 0-11
