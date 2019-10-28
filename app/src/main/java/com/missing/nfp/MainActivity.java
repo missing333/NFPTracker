@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
                 sc.smoothScrollTo((int) lastX-200, (int) lastY); // these are your x and y coordinates
 
             }
-        }, 1000);
+        }, 300);
 
 
     }

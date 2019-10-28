@@ -224,13 +224,13 @@ public class NfpEntry extends AppCompatActivity {
                 mCode.setSelection(1);
             }
 
-            if (savedCode.toLowerCase().contains("x1")){
+            if (savedCode.toLowerCase().contains("ad")){
                 mFreq.setSelection(1);
-            } else if (savedCode.toLowerCase().contains("x2")){
+            } else if (savedCode.toLowerCase().contains("x1")){
                 mFreq.setSelection(2);
-            } else if (savedCode.toLowerCase().contains("x3")){
+            } else if (savedCode.toLowerCase().contains("x2")){
                 mFreq.setSelection(3);
-            } else if (savedCode.toLowerCase().contains("ad")){
+            } else if (savedCode.toLowerCase().contains("x3")){
                 mFreq.setSelection(4);
             }
 
@@ -246,7 +246,7 @@ public class NfpEntry extends AppCompatActivity {
                 p.setChecked(true);}
             if (savedCode.toLowerCase().contains("l")){
                 l.setChecked(true);}
-            if (savedCode.toLowerCase().contains("d")){
+            if (savedCode.contains("d")){
                 d.setChecked(true);}
             if (savedCode.toLowerCase().contains("w")){
                 w.setChecked(true);}
@@ -383,7 +383,7 @@ public class NfpEntry extends AppCompatActivity {
         if(y.isChecked()){ code += "y"; }
         if(g.isChecked()){ code += "g"; }
         if(p.isChecked()){ code += "p"; }
-        if(d.isChecked()){ code += "D"; }
+        if(d.isChecked()){ code += "d"; }
         if(w.isChecked()){ code += "W"; }
         if(s.isChecked()){ code += "S"; }
         if(l.isChecked()){ code += "L"; }
@@ -392,16 +392,16 @@ public class NfpEntry extends AppCompatActivity {
             case 0:
                 break;
             case 1:
-                code += " x1";
+                code += " AD";
                 break;
             case 2:
-                code += " x2";
+                code += " x1";
                 break;
             case 3:
-                code += " x3";
+                code += " x2";
                 break;
             case 4:
-                code += " AD";
+                code += " x3";
                 break;
 
             default:
