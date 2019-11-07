@@ -20,21 +20,17 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.os.Looper;
-import android.os.MessageQueue;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Html;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.HorizontalScrollView;
 import android.widget.ScrollView;
@@ -58,10 +54,11 @@ public class MainActivity extends AppCompatActivity {
     private static final int NUM_ROWS = 6;
     private static final int NUM_COLS = 35;
     private static final int HEADER_TEXT_SIZE = 22;
-    Button[][] btnArray = new Button[NUM_ROWS][NUM_COLS];
-    TableLayout tLayout;
-    Intent intent;
-    String activeDate;
+    private final Button[][] btnArray = new Button[NUM_ROWS][NUM_COLS];
+    private TableLayout tLayout;
+    private Intent intent;
+    private String activeDate;
+    private String sLabel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,7 +88,6 @@ public class MainActivity extends AppCompatActivity {
                 //scroll horizontally **more important for this app
                 final HorizontalScrollView hv = findViewById(R.id.horizontalView);
                 hv.smoothScrollTo((int) lastX-200, (int) lastY); // these are your x and y coordinates
-
 
                 //scroll vertically
                 final ScrollView sc = findViewById(R.id.layout);
@@ -144,7 +140,6 @@ public class MainActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             Intent intent = new Intent(MainActivity.this, NotifSettings.class);
             startActivity(intent);
@@ -195,7 +190,7 @@ public class MainActivity extends AppCompatActivity {
         TableLayout table = findViewById(R.id.tableLayout1);
 
         SharedPreferences prefs = getSharedPreferences("Settings", MODE_PRIVATE);
-        Boolean legalNoticeUnderstood = prefs.getBoolean("legalNoticeUnderstood", false);
+        boolean legalNoticeUnderstood = prefs.getBoolean("legalNoticeUnderstood", false);
         if (!legalNoticeUnderstood) {
             //Legal Notice:
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -244,7 +239,8 @@ public class MainActivity extends AppCompatActivity {
             label.setTextSize(HEADER_TEXT_SIZE);
             label.setTypeface(null, Typeface.BOLD);
             label.setBackgroundResource(R.drawable.back);
-            label.setText(col + "");
+            sLabel = col + "";
+            label.setText(sLabel);
             tableRow.addView(label);
         }
 
@@ -406,7 +402,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static void startAlarming(Context context) {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
-        Boolean notifPref = sharedPref.getBoolean("notifications_new_message", true);
+        boolean notifPref = sharedPref.getBoolean("notifications_new_message", true);
 
         if (notifPref) {
             //daily notifications

@@ -1,6 +1,6 @@
 <resources>
 
-    <string name="versionCode">0.0.3</string>
+    <string name="versionCode">0.0.4</string>
 
     <string name="app_name">Charti</string>
 
@@ -12,7 +12,6 @@
     <string name="pdf_show_online_dialog_question">online question</string>
     <string name="pdf_show_online_dialog_button_no">no</string>
     <string name="pdf_show_online_dialog_button_yes">yes</string>
-    <string name="addDay">+Day</string>
     <string name="save">Save</string>
     <string name="mucus_frequency">Mucus Frequency</string>
     <string name="mucuscodelabel">Mucus Code</string>
@@ -28,7 +27,6 @@
     <string name="comments">Comments</string>
     <string name="red_level">Red Level</string>
     <string name="intercourse">Intercourse</string>
-    <string name="sticker">sticker</string>
     <string name="sticker_selection">Sticker Selection</string>
     <string name="peak">Peak</string>
     <string name="_1">1</string>
@@ -40,12 +38,7 @@
     <string name="title_activity_settings">Notifications</string>
 
     <!-- Example settings for Notifications -->
-    <string name="pref_header_notifications">Notifications</string>
     <string name="pref_title_new_message_notifications">Send Daily Notification</string>
-    <string name="pref_title_ringtone">Ringtone</string>
-    <string name="pref_ringtone_silent">Silent</string>
-    <string name="pref_title_vibrate">Vibrate</string>
-    <string name="pref_timepicker">Select time for Notifications</string>
 
     <!-- Strings for the actual notifications -->
     <string name="notifTitle">Go to NFP chart</string>
@@ -54,6 +47,7 @@
     <string name="legal_Prompt">This app is merely to aid in tracking fertility indicators.  \n\n  We neither guarantee to avoid pregnancy, nor do we guarantee to achieve it.</string>
     <string name="legalLabel">Legal Notice</string>
     <string name="understand">I Understand</string>
+    <string name="clear_all_fields">Clear All Fields</string>
 
 
 </resources>

@@ -23,9 +23,9 @@ import java.util.Locale;
 
 public class NfpEntry extends AppCompatActivity {
 
-    CalendarView date;
-    String selectedDate;
-    long dateInMillis;
+    private CalendarView date;
+    private String selectedDate;
+    private long dateInMillis;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -433,7 +433,7 @@ public class NfpEntry extends AppCompatActivity {
         return code;
     }
 
-    CalendarView.OnDateChangeListener myCalendarListener = new CalendarView.OnDateChangeListener(){
+    private final CalendarView.OnDateChangeListener myCalendarListener = new CalendarView.OnDateChangeListener(){
 
         public void onSelectedDayChange(CalendarView view, int year, int month, int day){
 

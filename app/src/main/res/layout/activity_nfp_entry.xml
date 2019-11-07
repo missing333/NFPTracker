@@ -47,7 +47,6 @@
 
 
                 <TextView
-                    android:id="@+id/redLabel"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -80,7 +79,6 @@
                 android:layout_height="match_parent" >
 
                 <TextView
-                    android:id="@+id/mucusCodeLabel"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -89,7 +87,6 @@
                     android:textColor="@color/colorAccent" />
 
                 <TextView
-                    android:id="@+id/mucusFreqLabel"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -211,13 +208,13 @@
 
                 <CheckBox
                     android:id="@+id/Intercourse"
-                    android:layout_width="150px"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:layout_gravity="center"
-                    android:layout_weight="3"
-                    android:width="150"
+                    android:width="130dp"
                     android:singleLine="true"
-                    android:text="@string/intercourse" />
+                    android:text="@string/intercourse"
+                    android:textAlignment="center" />
 
             </TableRow>
 
@@ -226,7 +223,6 @@
                 android:layout_height="match_parent" >
 
                 <TextView
-                    android:id="@+id/stickerLabel"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
@@ -369,7 +365,6 @@
                         android:text="@string/_3" />
 
                     <RadioButton
-                        android:id="@+id/removePeak"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
