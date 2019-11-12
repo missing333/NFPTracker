@@ -8,7 +8,7 @@
     tools:context=".NfpEntry">
 
     <ScrollView
-        android:id="@+id/scrollView"
+        android:id="@+id/nfpScrollView"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="16dp"
@@ -211,11 +211,10 @@
 
                 <CheckBox
                     android:id="@+id/Intercourse"
-                    android:layout_width="150px"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_weight="3"
-                    android:width="150"
+                    android:width="150dp"
                     android:singleLine="true"
                     android:text="@string/intercourse" />
 
@@ -421,7 +420,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/scrollView" />
+        app:layout_constraintTop_toBottomOf="@+id/nfpScrollView" />
 
 
 </android.support.constraint.ConstraintLayout>

@@ -21,6 +21,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.util.LruCache;
 import android.view.View;
 import android.widget.HorizontalScrollView;
@@ -213,8 +214,11 @@ public class PDFTools {
 
         view.setDrawingCacheEnabled(true);
         view.buildDrawingCache(true);
+        Log.d("dims", "width: "+view.getWidth());
+        Log.d("dims", "height: "+view.getHeight());
 
-            bitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(),
+
+        bitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(),
                     Bitmap.Config.ARGB_8888);
             view.layout(0, 0, view.getLayoutParams().width,
                     view.getLayoutParams().height);

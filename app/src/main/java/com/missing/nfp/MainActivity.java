@@ -1,7 +1,9 @@
 package com.missing.nfp;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlarmManager;
+import android.app.DownloadManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -20,21 +22,18 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.os.Looper;
-import android.os.MessageQueue;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Html;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.HorizontalScrollView;
 import android.widget.ScrollView;
@@ -69,12 +68,24 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.table_main);
         tLayout = findViewById(R.id.tableLayout1);
 
+        //checking for permission to write
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Permission is not granted
+            // request the permission
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    2);
+
+        }
+
         populateCells("fromPrefs");
         startAlarming(getApplicationContext());
 
-
-
     }
+
 
     private void scrollToLastPickedCell() {
         final Handler handler = new Handler();
@@ -90,12 +101,12 @@ public class MainActivity extends AppCompatActivity {
 
                 //scroll horizontally **more important for this app
                 final HorizontalScrollView hv = findViewById(R.id.horizontalView);
-                hv.smoothScrollTo((int) lastX-200, (int) lastY); // these are your x and y coordinates
+                hv.smoothScrollTo((int) lastX - 200, (int) lastY); // these are your x and y coordinates
 
 
                 //scroll vertically
                 final ScrollView sc = findViewById(R.id.layout);
-                sc.smoothScrollTo((int) lastX-200, (int) lastY); // these are your x and y coordinates
+                sc.smoothScrollTo((int) lastX - 200, (int) lastY); // these are your x and y coordinates
 
             }
         }, 300);
@@ -105,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
+        //this method handles the return data from the NFP Entry screen.
 
         if (requestCode == 1) {
             //Retrieve nfp entry data
@@ -117,16 +128,21 @@ public class MainActivity extends AppCompatActivity {
                 int stickerID = data.getIntExtra("STICKERID", 0);
 
                 btnArray[btnRow][btnCol].setCompoundDrawablesWithIntrinsicBounds(0, stickerID, 0, 0);
-                String combined = activeDate +"\n" +code;
+                String combined = activeDate + "\n" + code;
                 Typeface font = Typeface.createFromAsset(getAssets(), "fonts/NotoSerifTC-Regular.otf");
                 btnArray[btnRow][btnCol].setTypeface(font);
                 btnArray[btnRow][btnCol].setTransformationMethod(null);
                 btnArray[btnRow][btnCol].setText(combined);
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        } else if (requestCode == 2 ){
-            printPDF();
+
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+
+            if (sharedPref.getBoolean("autoSave", true)){
+                printPDF("autoSave", false);
+            }
         }
     }
 
@@ -144,21 +160,86 @@ public class MainActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
+
         if (id == R.id.action_settings) {
             Intent intent = new Intent(MainActivity.this, NotifSettings.class);
             startActivity(intent);
             return true;
-        }
-        else if (id == R.id.action_print) {
-            printPDF();
+        } else if (id == R.id.action_print) {
+            Date c = Calendar.getInstance().getTime();
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MMM-dd");
+            String formattedDate = df.format(c);
+            printPDF(formattedDate, true);
             return true;
-        }
-        else if (id == R.id.action_clearAll) {
+        } else if (id == R.id.action_view) {
+            openDownloads(this);
+            return true;
+        } else if (id == R.id.action_clearAll) {
             clearAllFields();
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+
+
+    public void printPDF(String pdfname, Boolean displayPDF) {
+
+
+        //Permission has already been granted
+        //start creating PDF here.
+        File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        File fol = new File(dir, "Charti");
+        if(!fol.exists()) {
+            fol.mkdirs();
+        }
+        try {
+            final File file = new File(fol,  pdfname + ".pdf");
+            file.createNewFile();
+            FileOutputStream fOut = new FileOutputStream(file);
+
+
+            Bitmap bm = null;
+
+            bm = PDFTools.getScreenshotFromTableView(tLayout);
+
+
+            PdfDocument document = new PdfDocument();
+            PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(bm.getWidth() + 100, bm.getHeight() + 100, 1).create();
+            PdfDocument.Page page = document.startPage(pageInfo);
+
+
+            // draw table on the page
+            Canvas canvas = page.getCanvas();
+            canvas.drawBitmap(bm, null, new Rect(50, 50, bm.getWidth(), bm.getHeight()), null);
+
+
+            // finish the page
+            document.finishPage(page);
+            // add more pages
+            // write the document content
+            document.writeTo(fOut);
+            document.close();
+
+            if (Build.VERSION.SDK_INT >= 24) {
+                try {
+                    Method m = StrictMode.class.getMethod("disableDeathOnFileUriExposure");
+                    m.invoke(null);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+
+            if (displayPDF) {
+                PDFTools.openPDF(this, Uri.fromFile(file));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        recreate();
     }
 
     private void clearAllFields() {
@@ -171,6 +252,13 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         //continue deleting
+                       /* Toast.makeText(MainActivity.this, "Saving this chart", Toast.LENGTH_LONG).show();
+                        Date c = Calendar.getInstance().getTime();
+                        SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
+                        String formattedDate = df.format(c);
+                        printPDF(formattedDate + " Before Clear", false);
+                        //TODO: save when clearing
+                        */
                         SharedPreferences.Editor editor = getSharedPreferences("Settings", MODE_PRIVATE).edit();
                         editor.putBoolean("legalNoticeUnderstood", false);
                         editor.putFloat("LASTX", 0);
@@ -189,6 +277,27 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog dialog = builder.create();
         dialog.show();
 
+    }
+
+    //TODO: open the folder within the downloads directory directly.
+    public static void openDownloads(@NonNull Activity activity) {
+        if (isSamsung()) {
+            Intent intent = activity.getPackageManager()
+                    .getLaunchIntentForPackage("com.sec.android.app.myfiles");
+            intent.setAction("samsung.myfiles.intent.action.LAUNCH_MY_FILES");
+            intent.putExtra("samsung.myfiles.intent.extra.START_PATH",
+                    getDownloadsFile().getPath());
+            activity.startActivity(intent);
+        }
+        else activity.startActivity(new Intent(DownloadManager.ACTION_VIEW_DOWNLOADS));
+    }
+    public static boolean isSamsung() {
+        String manufacturer = Build.MANUFACTURER;
+        if (manufacturer != null) return manufacturer.toLowerCase().equals("samsung");
+        return false;
+    }
+    public static File getDownloadsFile() {
+        return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
     }
 
     private void populateCells(String tag) {
@@ -257,7 +366,7 @@ public class MainActivity extends AppCompatActivity {
                     TableRow.LayoutParams.MATCH_PARENT,
                     1.0f
             );
-            params.setMargins(0,0 ,0 ,60 );
+            params.setMargins(0, 0, 0, 60);
             tableRow.setLayoutParams(params);
             table.addView(tableRow);
             for (int j = 0; j < btnArray[i].length; j++) {
@@ -268,27 +377,26 @@ public class MainActivity extends AppCompatActivity {
                 gd.setCornerRadius(5);
                 gd.setStroke(1, 0xFF000000);
                 btnArray[i][j].setBackground(gd);
-                btnArray[i][j].setPadding(10, -5,10 ,0 );
+                btnArray[i][j].setPadding(10, -5, 10, 0);
 
 
-                if (tag.equals("reset")){
+                if (tag.equals("reset")) {
                     SharedPreferences.Editor editor = getSharedPreferences("Settings", MODE_PRIVATE).edit();
-                    editor.putString("r"+i+"c"+j+"date", null);
-                    editor.putString("r"+i+"c"+j+"code", null);
-                    editor.putString("r"+i+"c"+j+"comments", null);
-                    editor.putInt("r"+i+"c"+j+"sticker", 0);
-                    editor.putInt("r"+i+"c"+j+"stickerButton", 0);
+                    editor.putString("r" + i + "c" + j + "date", null);
+                    editor.putString("r" + i + "c" + j + "code", null);
+                    editor.putString("r" + i + "c" + j + "comments", null);
+                    editor.putInt("r" + i + "c" + j + "sticker", 0);
+                    editor.putInt("r" + i + "c" + j + "stickerButton", 0);
                     editor.apply();
                     btnArray[i][j].setText("");
                     btnArray[i][j].setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
-                }
-                else{
+                } else {
                     //pull from preferences
                     prefs = getSharedPreferences("Settings", MODE_PRIVATE);
-                    String savedDate = prefs.getString("r"+i+"c"+j+"date", null);
-                    String savedCode = prefs.getString("r"+i+"c"+j+"code", null);
-                    String savedComments = prefs.getString("r"+i+"c"+j+"comments", null);
-                    int savedSticker = prefs.getInt("r"+i+"c"+j+"sticker", 0);
+                    String savedDate = prefs.getString("r" + i + "c" + j + "date", null);
+                    String savedCode = prefs.getString("r" + i + "c" + j + "code", null);
+                    String savedComments = prefs.getString("r" + i + "c" + j + "comments", null);
+                    int savedSticker = prefs.getInt("r" + i + "c" + j + "sticker", 0);
                     Log.d("prefs", savedCode + ", " + savedComments + ", " + savedSticker);
                     String combined = savedDate;
 
@@ -304,8 +412,9 @@ public class MainActivity extends AppCompatActivity {
                     btnArray[i][j].setTypeface(font);
                     btnArray[i][j].setTransformationMethod(null);
                     btnArray[i][j].setText(combined);
-                    if (savedSticker != 0 ){
-                        btnArray[i][j].setCompoundDrawablesWithIntrinsicBounds(0, savedSticker, 0, 0);}
+                    if (savedSticker != 0) {
+                        btnArray[i][j].setCompoundDrawablesWithIntrinsicBounds(0, savedSticker, 0, 0);
+                    }
                 }
 
 
@@ -329,79 +438,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         scrollToLastPickedCell();
-    }
-
-    private void printPDF() {
-
-
-        //checking for permission to write
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            // Permission is not granted
-            // request the permission
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    2);
-
-
-            Toast.makeText(this,"Please Print again after you grant permission" , Toast.LENGTH_LONG).show();
-        }
-        else {
-            //Permission has already been granted
-            //start creating PDF here.
-            String extstoragedir = Environment.getExternalStorageDirectory().toString();
-            File fol = new File(extstoragedir, "NFPapp");
-            File folder=new File(fol,"pdf archive");
-            if(!folder.exists()) {
-                folder.mkdirs();
-            }
-            try {
-                final File file = new File(folder, "sample.pdf");
-                file.createNewFile();
-                FileOutputStream fOut = new FileOutputStream(file);
-
-
-                Bitmap bm = PDFTools.getScreenshotFromTableView(tLayout);
-
-                PdfDocument document = new PdfDocument();
-                PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(bm.getWidth()+100, bm.getHeight()+100, 1).create();
-                PdfDocument.Page page = document.startPage(pageInfo);
-
-
-                // draw table on the page
-                Canvas canvas = page.getCanvas();
-                canvas.drawBitmap(bm, null, new Rect(50, 50, bm.getWidth(),bm.getHeight()), null);
-
-
-                // finish the page
-                document.finishPage(page);
-                // add more pages
-                // write the document content
-                document.writeTo(fOut);
-                document.close();
-
-
-                if(Build.VERSION.SDK_INT>=24){
-                    try{
-                        Method m = StrictMode.class.getMethod("disableDeathOnFileUriExposure");
-                        m.invoke(null);
-                    }catch(Exception e){
-                        e.printStackTrace();
-                    }
-                }
-
-
-                PDFTools.openPDF(this, Uri.fromFile(file));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            recreate();
-        }
-
-
     }
 
     public static void startAlarming(Context context) {
@@ -440,4 +476,8 @@ public class MainActivity extends AppCompatActivity {
             Log.d("nfpNotifs", "I am NOT going to send notifications.");
         }
     }
+
+
 }
+
+

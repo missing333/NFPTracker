@@ -23,9 +23,15 @@
         android:summary=""
         android:title="Notification Time" />
 
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="autoSave"
+        android:title="@string/pref_auto_save" />
+
     <Preference
         android:key="appVersion"
         android:title="@string/version"
         android:summary="@string/versionCode"/>
+
 
 </PreferenceScreen>

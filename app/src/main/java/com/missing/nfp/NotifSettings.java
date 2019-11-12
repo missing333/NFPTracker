@@ -73,6 +73,11 @@ public class NotifSettings extends PreferenceActivity {
                 Log.d(TAG, "Set alarm from TimeChange.");
 
             }
+
+            if (key.equals("autoSave")){
+                Log.d(TAG, "AutoSave changed");
+                sharedPreferences.edit().apply();
+            }
         }
 
     }

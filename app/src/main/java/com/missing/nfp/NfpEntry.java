@@ -2,11 +2,12 @@ package com.missing.nfp;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CalendarView;
@@ -14,6 +15,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -45,6 +47,8 @@ public class NfpEntry extends AppCompatActivity {
         float pct = (float) 0.8;
         getWindow().setLayout((int) (width * pct), (int) (height * pct));
 
+
+
         ////get date
         date = findViewById(R.id.calendarView);
         Calendar today = Calendar.getInstance();
@@ -52,27 +56,34 @@ public class NfpEntry extends AppCompatActivity {
         selectedDate = sdf.format(today.getTime());
         date.setOnDateChangeListener(myCalendarListener);
 
+
+
         ////set Spinners to Centered Text
+        Spinner redCode = findViewById(R.id.redCode);
+
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-                this, R.array.mucusCodesArray,R.layout.spinner_center_item);
+                this, R.array.mucusCodesArray, R.layout.spinner_center_item);
         adapter.setDropDownViewResource(R.layout.spinner_center_item);
         Spinner mCodes = findViewById(R.id.mucusCode);
         mCodes.setAdapter(adapter);
         adapter = ArrayAdapter.createFromResource(
-                this, R.array.mucusFreqArray,R.layout.spinner_center_item);
+                this, R.array.mucusFreqArray, R.layout.spinner_center_item);
         adapter.setDropDownViewResource(R.layout.spinner_center_item);
         Spinner mFreqs = findViewById(R.id.mucusFreq);
         mFreqs.setAdapter(adapter);
 
-        //restore button selections
-        restoreSelections(r,c);
+        mFreqs.setOnItemSelectedListener(scrollToBottom);
+        redCode.setOnItemSelectedListener(scrollToBottom);
 
+
+        //restore button selections
+        restoreSelections(r, c);
 
         CheckBox lub = findViewById(R.id.L);
         CheckBox d = findViewById(R.id.d);
         CheckBox w = findViewById(R.id.w);
         CheckBox s = findViewById(R.id.s);
-        if (lub.isChecked()){
+        if (lub.isChecked()) {
             d.setEnabled(true);
             w.setEnabled(true);
             s.setEnabled(true);
@@ -82,22 +93,22 @@ public class NfpEntry extends AppCompatActivity {
             s.setEnabled(false);
         }
         lub.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {
-                    CheckBox d = findViewById(R.id.d);
-                    CheckBox w = findViewById(R.id.w);
-                    CheckBox s = findViewById(R.id.s);
-                    if (isChecked){
-                        d.setEnabled(true);
-                        w.setEnabled(true);
-                        s.setEnabled(true);
-                    } else {
-                        d.setEnabled(false);
-                        w.setEnabled(false);
-                        s.setEnabled(false);
-                    }
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                CheckBox d = findViewById(R.id.d);
+                CheckBox w = findViewById(R.id.w);
+                CheckBox s = findViewById(R.id.s);
+                if (isChecked) {
+                    d.setEnabled(true);
+                    w.setEnabled(true);
+                    s.setEnabled(true);
+                } else {
+                    d.setEnabled(false);
+                    w.setEnabled(false);
+                    s.setEnabled(false);
                 }
-            });
+            }
+        });
 
         //effects to happen when saving.
         Button save = findViewById(R.id.save);
@@ -113,38 +124,38 @@ public class NfpEntry extends AppCompatActivity {
                 int stickerID = getStickerID();
 
                 //add new line if anything else is present, then add comments, if any.
-                if (comments.length() > 0){
-                    if (combined.length()>0) {combined += "\n";}
+                if (comments.length() > 0) {
+                    if (combined.length() > 0) {
+                        combined += "\n";
+                    }
                     combined += comments;
                 }
 
 
                 Intent intent = getIntent();
                 intent.putExtra("DATE", selectedDate);
-                intent.putExtra("BUTTONROW",r);
-                intent.putExtra("BUTTONCOL",c);
+                intent.putExtra("BUTTONROW", r);
+                intent.putExtra("BUTTONCOL", c);
                 intent.putExtra("CODE", combined);
                 intent.putExtra("STICKERID", stickerID);
 
 
-
                 SharedPreferences.Editor editor = getSharedPreferences("Settings", MODE_PRIVATE).edit();
-                editor.putString("r"+r+"c"+c+"date", selectedDate);
-                editor.putString("r"+r+"c"+c+"code", code);
-                editor.putString("r"+r+"c"+c+"comments", comments);
-                editor.putInt("r"+r+"c"+c+"sticker", stickerID);
-                editor.putInt("r"+r+"c"+c+"stickerButton", radioGroup.getCheckedRadioButtonId());
+                editor.putString("r" + r + "c" + c + "date", selectedDate);
+                editor.putString("r" + r + "c" + c + "code", code);
+                editor.putString("r" + r + "c" + c + "comments", comments);
+                editor.putInt("r" + r + "c" + c + "sticker", stickerID);
+                editor.putInt("r" + r + "c" + c + "stickerButton", radioGroup.getCheckedRadioButtonId());
                 editor.putFloat("LASTX", lastX);
                 editor.putFloat("LASTY", lastY);
                 editor.apply();
 
                 setResult(1, intent); //The data you want to send back
+
                 finish();
             }
         });
     }
-
-
 
     private void restoreSelections(int row, int col) {
         Spinner mCode = findViewById(R.id.mucusCode);
@@ -169,16 +180,16 @@ public class NfpEntry extends AppCompatActivity {
         CalendarView cal = findViewById(R.id.calendarView);
 
         SharedPreferences prefs = getSharedPreferences("Settings", MODE_PRIVATE);
-        String savedDate = prefs.getString("r"+row+"c"+col+"date", null);
-        String savedCode = prefs.getString("r"+row+"c"+col+"code", null);
-        String savedComments = prefs.getString("r"+row+"c"+col+"comments", null);
-        int savedStickerButton = prefs.getInt("r"+row+"c"+col+"stickerButton", 0);
+        String savedDate = prefs.getString("r" + row + "c" + col + "date", null);
+        String savedCode = prefs.getString("r" + row + "c" + col + "code", null);
+        String savedComments = prefs.getString("r" + row + "c" + col + "comments", null);
+        int savedStickerButton = prefs.getInt("r" + row + "c" + col + "stickerButton", 0);
 
-        if (savedDate != null){
+        if (savedDate != null) {
             String[] parts = savedDate.split("/");
 
             int day = Integer.parseInt(parts[1]);
-            int month = Integer.parseInt(parts[0])-1;  //because calendar months are from 0-11
+            int month = Integer.parseInt(parts[0]) - 1;  //because calendar months are from 0-11
             int year = Integer.parseInt(parts[2]);
 
             Calendar calendar = Calendar.getInstance();
@@ -187,86 +198,96 @@ public class NfpEntry extends AppCompatActivity {
             calendar.set(Calendar.DAY_OF_MONTH, day);
 
             long milliTime = calendar.getTimeInMillis();
-            cal.setDate (milliTime, true, true);
+            cal.setDate(milliTime, true, true);
             selectedDate = savedDate;
         }
 
-        if (savedComments != null){
+        if (savedComments != null) {
             comments.setText(savedComments);
         }
 
         if (savedCode != null) {
             Log.d("prefs", "Loading code into views: " + savedCode);
 
-            if (savedCode.toLowerCase().contains("b")){
+            if (savedCode.toLowerCase().contains("b")) {
                 mRedCode.setSelection(1);
-            } else if (savedCode.toLowerCase().contains("vlr")){
+            } else if (savedCode.toLowerCase().contains("vlr")) {
                 mRedCode.setSelection(2);
-            } else if (savedCode.toLowerCase().contains("lr")){
+            } else if (savedCode.toLowerCase().contains("lr")) {
                 mRedCode.setSelection(3);
-            } else if (savedCode.toLowerCase().contains("mr")){
+            } else if (savedCode.toLowerCase().contains("mr")) {
                 mRedCode.setSelection(4);
-            } else if (savedCode.toLowerCase().contains("hr")){
+            } else if (savedCode.toLowerCase().contains("hr")) {
                 mRedCode.setSelection(5);
             }
 
-            if (savedCode.toLowerCase().contains("10")){
+            if (savedCode.toLowerCase().contains("10")) {
                 mCode.setSelection(6);
-            } else if (savedCode.toLowerCase().contains("8")){
+            } else if (savedCode.toLowerCase().contains("8")) {
                 mCode.setSelection(5);
-            } else if (savedCode.toLowerCase().contains("6")){
+            } else if (savedCode.toLowerCase().contains("6")) {
                 mCode.setSelection(4);
-            } else if (savedCode.toLowerCase().contains("4")){
+            } else if (savedCode.toLowerCase().contains("4")) {
                 mCode.setSelection(3);
-            } else if (savedCode.toLowerCase().contains("2")){
+            } else if (savedCode.toLowerCase().contains("2")) {
                 mCode.setSelection(2);
-            } else if (savedCode.toLowerCase().contains("0")){
+            } else if (savedCode.toLowerCase().contains("0")) {
                 mCode.setSelection(1);
             }
 
-            if (savedCode.toLowerCase().contains("ad")){
+            if (savedCode.toLowerCase().contains("ad")) {
                 mFreq.setSelection(1);
-            } else if (savedCode.toLowerCase().contains("x1")){
+            } else if (savedCode.toLowerCase().contains("x1")) {
                 mFreq.setSelection(2);
-            } else if (savedCode.toLowerCase().contains("x2")){
+            } else if (savedCode.toLowerCase().contains("x2")) {
                 mFreq.setSelection(3);
-            } else if (savedCode.toLowerCase().contains("x3")){
+            } else if (savedCode.toLowerCase().contains("x3")) {
                 mFreq.setSelection(4);
             }
 
-            if (savedCode.toLowerCase().contains("c")){
-                c.setChecked(true);}
-            if (savedCode.toLowerCase().contains("k")){
-                k.setChecked(true);}
-            if (savedCode.toLowerCase().contains("y")){
-                y.setChecked(true);}
-            if (savedCode.toLowerCase().contains("g")){
-                g.setChecked(true);}
-            if (savedCode.toLowerCase().contains("p")){
-                p.setChecked(true);}
-            if (savedCode.toLowerCase().contains("l")){
-                l.setChecked(true);}
-            if (savedCode.contains("d")){
-                d.setChecked(true);}
-            if (savedCode.toLowerCase().contains("w")){
-                w.setChecked(true);}
-            if (savedCode.toLowerCase().contains("s")){
-                s.setChecked(true);}
-            if (savedCode.toLowerCase().contains("i")){
-                i.setChecked(true);}
+            if (savedCode.toLowerCase().contains("c")) {
+                c.setChecked(true);
+            }
+            if (savedCode.toLowerCase().contains("k")) {
+                k.setChecked(true);
+            }
+            if (savedCode.toLowerCase().contains("y")) {
+                y.setChecked(true);
+            }
+            if (savedCode.toLowerCase().contains("g")) {
+                g.setChecked(true);
+            }
+            if (savedCode.toLowerCase().contains("p")) {
+                p.setChecked(true);
+            }
+            if (savedCode.toLowerCase().contains("l ")) {
+                l.setChecked(true);
+            }
+            if (savedCode.contains("d")) {
+                d.setChecked(true);
+            }
+            if (savedCode.toLowerCase().contains("w")) {
+                w.setChecked(true);
+            }
+            if (savedCode.toLowerCase().contains("s")) {
+                s.setChecked(true);
+            }
+            if (savedCode.toLowerCase().contains("i")) {
+                i.setChecked(true);
+            }
 
             //restore Peak, 1, 2, 3
-            if(savedCode.contains("P1")){
+            if (savedCode.contains("P1")) {
                 peak1.setChecked(true);
-            } else if(savedCode.contains("P2")){
+            } else if (savedCode.contains("P2")) {
                 peak2.setChecked(true);
-            } else if(savedCode.contains("P3")){
+            } else if (savedCode.contains("P3")) {
                 peak3.setChecked(true);
-            }else if(savedCode.contains("P")){
+            } else if (savedCode.contains("P")) {
                 peak.setChecked(true);
             }
         }
-        if (savedStickerButton != 0){
+        if (savedStickerButton != 0) {
             Log.d("prefs", "Loading sticker into views: " + savedStickerButton);
             RadioButton tempB = stickerGroup.findViewById(savedStickerButton);
             try {
@@ -275,8 +296,6 @@ public class NfpEntry extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
-
-
 
 
     }
@@ -306,7 +325,7 @@ public class NfpEntry extends AppCompatActivity {
     }
 
     private String generateFinalCode() {
-        String code="";
+        String code = "";
         Spinner mCode = findViewById(R.id.mucusCode);
         Spinner mRedCode = findViewById(R.id.redCode);
         Spinner mFreq = findViewById(R.id.mucusFreq);
@@ -328,7 +347,7 @@ public class NfpEntry extends AppCompatActivity {
         TextView comments = findViewById(R.id.comments);
 
 
-        switch (mRedCode.getSelectedItemPosition()){
+        switch (mRedCode.getSelectedItemPosition()) {
             case 0:
                 break;
             case 1:
@@ -351,7 +370,7 @@ public class NfpEntry extends AppCompatActivity {
                 break;
         }
 
-        switch (mCode.getSelectedItemPosition()){
+        switch (mCode.getSelectedItemPosition()) {
             case 0:
                 break;
             case 1:
@@ -378,17 +397,35 @@ public class NfpEntry extends AppCompatActivity {
         }
 
 
-        if(c.isChecked()){ code += "c"; }
-        if(k.isChecked()){ code += "k"; }
-        if(y.isChecked()){ code += "y"; }
-        if(g.isChecked()){ code += "g"; }
-        if(p.isChecked()){ code += "p"; }
-        if(d.isChecked()){ code += "d"; }
-        if(w.isChecked()){ code += "W"; }
-        if(s.isChecked()){ code += "S"; }
-        if(l.isChecked()){ code += "L"; }
+        if (c.isChecked()) {
+            code += "c";
+        }
+        if (k.isChecked()) {
+            code += "k";
+        }
+        if (y.isChecked()) {
+            code += "y";
+        }
+        if (g.isChecked()) {
+            code += "g";
+        }
+        if (p.isChecked()) {
+            code += "p";
+        }
+        if (d.isChecked()) {
+            code += "d";
+        }
+        if (w.isChecked()) {
+            code += "W";
+        }
+        if (s.isChecked()) {
+            code += "S";
+        }
+        if (l.isChecked()) {
+            code += "L";
+        }
 
-        switch (mFreq.getSelectedItemPosition()){
+        switch (mFreq.getSelectedItemPosition()) {
             case 0:
                 break;
             case 1:
@@ -410,39 +447,67 @@ public class NfpEntry extends AppCompatActivity {
 
 
         //add new line if mucus code is present, then add I if that's checked
-        if(i.isChecked()){
-            if (code.length()>0) {code += "\n";}
+        if (i.isChecked()) {
+            if (code.length() > 0) {
+                code += "\n";
+            }
             code += "I";
         }
 
-        if(peak.isChecked()){
-            if (code.length()>0) {code += "\n";}
-            code += "P"; }
-        else if(peak1.isChecked()){
-            if (code.length()>0) {code += "\n";}
-            code += "P1"; }
-        else if(peak2.isChecked()){
-            if (code.length()>0) {code += "\n";}
-            code += "P2"; }
-        else if(peak3.isChecked()){
-            if (code.length()>0) {code += "\n";}
-            code += "P3"; }
+        if (peak.isChecked()) {
+            if (code.length() > 0) {
+                code += "\n";
+            }
+            code += "P";
+        } else if (peak1.isChecked()) {
+            if (code.length() > 0) {
+                code += "\n";
+            }
+            code += "P1";
+        } else if (peak2.isChecked()) {
+            if (code.length() > 0) {
+                code += "\n";
+            }
+            code += "P2";
+        } else if (peak3.isChecked()) {
+            if (code.length() > 0) {
+                code += "\n";
+            }
+            code += "P3";
+        }
 
 
-        Log.d("codeMucus",code);
+        Log.d("codeMucus", code);
         return code;
     }
 
-    CalendarView.OnDateChangeListener myCalendarListener = new CalendarView.OnDateChangeListener(){
+    AdapterView.OnItemSelectedListener scrollToBottom = new AdapterView.OnItemSelectedListener() {
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            if (position > 0) {
+                final ScrollView sc = findViewById(R.id.nfpScrollView);
+                sc.smoothScrollTo((int) 0, (int) 1500); // these are your x and y coordinates
+            }
+        }
 
-        public void onSelectedDayChange(CalendarView view, int year, int month, int day){
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+
+        }
+    };
+
+    CalendarView.OnDateChangeListener myCalendarListener = new CalendarView.OnDateChangeListener() {
+
+        public void onSelectedDayChange(CalendarView view, int year, int month, int day) {
 
             // add one because month starts at 0
             month = month + 1;
-            selectedDate = month+"/"+day+"/"+year;
+            selectedDate = month + "/" + day + "/" + year;
             dateInMillis = view.getDate();
             Log.d("dateCalc", "date changed to: " + dateInMillis + ", aka " + selectedDate);
             //Toast.makeText(getApplicationContext(),selectedDate,Toast.LENGTH_SHORT).show();
+            final ScrollView sc = findViewById(R.id.nfpScrollView);
+            sc.smoothScrollTo((int) 0, (int) 650); // these are your x and y coordinates
         }
     };
 
