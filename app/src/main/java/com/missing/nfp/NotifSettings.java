@@ -17,8 +17,7 @@ import android.util.Log;
 
 public class NotifSettings extends PreferenceActivity {
 
-    private final static String TAG = "nfpNotifs";
-    public Preference time;
+    private final static String TAG = "NotifSettings";
 
     public NotifSettings() {
     }
@@ -26,7 +25,7 @@ public class NotifSettings extends PreferenceActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "OnCreate NofitfSettingsOverflowMenu");
+        Log.d(TAG, "OnCreate NotifSettingsOverflowMenu");
 
         getFragmentManager().beginTransaction()
                 .replace(android.R.id.content, new LocationFragment()).commit();
@@ -55,7 +54,7 @@ public class NotifSettings extends PreferenceActivity {
             AlarmManager am = (AlarmManager) getActivity().getSystemService(ALARM_SERVICE);
 
             if (key.equals("notifications_new_message")) {
-                Boolean notifPref = sharedPreferences.getBoolean("notifications_new_message", true);
+                boolean notifPref = sharedPreferences.getBoolean("notifications_new_message", true);
 
                 if (notifPref) {
                     MainActivity.startAlarming(getContext());

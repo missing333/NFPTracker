@@ -24,21 +24,14 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.util.LruCache;
 import android.view.View;
-import android.widget.HorizontalScrollView;
-import android.widget.LinearLayout;
-import android.widget.ListAdapter;
-import android.widget.ListView;
-import android.widget.ScrollView;
 import android.widget.TableLayout;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
 
-public class PDFTools {
+class PDFTools {
     private static final String GOOGLE_DRIVE_PDF_READER_PREFIX = "http://drive.google.com/viewer?url=";
     private static final String PDF_MIME_TYPE = "application/pdf";
     private static final String HTML_MIME_TYPE = "text/html";
@@ -66,7 +59,7 @@ public class PDFTools {
      * @param pdfUrl
      */
     @TargetApi(Build.VERSION_CODES.GINGERBREAD)
-    public static void downloadAndOpenPDF(final Context context, final String pdfUrl) {
+    private static void downloadAndOpenPDF(final Context context, final String pdfUrl) {
         // Get filename
         final String filename = pdfUrl.substring( pdfUrl.lastIndexOf( "/" ) + 1 );
         // The place where the downloaded PDF file will be put
@@ -116,7 +109,7 @@ public class PDFTools {
      * @param context
      * @param pdfUrl
      */
-    public static void askToOpenPDFThroughGoogleDrive( final Context context, final String pdfUrl ) {
+    private static void askToOpenPDFThroughGoogleDrive(final Context context, final String pdfUrl) {
         new AlertDialog.Builder( context )
                 .setTitle( R.string.pdf_show_online_dialog_title )
                 .setMessage( R.string.pdf_show_online_dialog_question )
@@ -135,7 +128,7 @@ public class PDFTools {
      * @param context
      * @param pdfUrl
      */
-    public static void openPDFThroughGoogleDrive(final Context context, final String pdfUrl) {
+    private static void openPDFThroughGoogleDrive(final Context context, final String pdfUrl) {
         Intent i = new Intent( Intent.ACTION_VIEW );
         i.setDataAndType(Uri.parse(GOOGLE_DRIVE_PDF_READER_PREFIX + pdfUrl ), HTML_MIME_TYPE );
         context.startActivity( i );
@@ -145,7 +138,7 @@ public class PDFTools {
      * @param context
      * @param localUri
      */
-    public static final void openPDF(Context context, Uri localUri ) {
+    public static void openPDF(Context context, Uri localUri ) {
         Intent i = new Intent( Intent.ACTION_VIEW );
         i.setDataAndType( localUri, PDF_MIME_TYPE );
         context.startActivity( i );
@@ -155,57 +148,11 @@ public class PDFTools {
      * @param context
      * @return
      */
-    public static boolean isPDFSupported( Context context ) {
+    private static boolean isPDFSupported(Context context) {
         Intent i = new Intent( Intent.ACTION_VIEW );
         final File tempFile = new File( context.getExternalFilesDir( Environment.DIRECTORY_DOWNLOADS ), "test.pdf" );
         i.setDataAndType( Uri.fromFile( tempFile ), PDF_MIME_TYPE );
         return context.getPackageManager().queryIntentActivities( i, PackageManager.MATCH_DEFAULT_ONLY ).size() > 0;
-    }
-
-    public static Bitmap getScreenshotFromRecyclerView(RecyclerView view) {
-        RecyclerView.Adapter adapter = view.getAdapter();
-        Bitmap bigBitmap = null;
-        if (adapter != null) {
-            int size = adapter.getItemCount();
-            int width = 0;
-            Paint paint = new Paint();
-            int iWidth = 0;
-            final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
-
-            // Use 1/8th of the available memory for this memory cache.
-            final int cacheSize = maxMemory / 8;
-            LruCache<String, Bitmap> bitmaCache = new LruCache<>(cacheSize);
-            for (int i = 0; i < size; i++) {
-                RecyclerView.ViewHolder holder = adapter.createViewHolder(view, adapter.getItemViewType(i));
-                adapter.onBindViewHolder(holder, i);
-                holder.itemView.measure(View.MeasureSpec.makeMeasureSpec(view.getWidth(), View.MeasureSpec.EXACTLY),
-                        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-                holder.itemView.layout(0, 0, holder.itemView.getMeasuredWidth(), holder.itemView.getMeasuredHeight());
-                holder.itemView.setDrawingCacheEnabled(true);
-                holder.itemView.buildDrawingCache();
-                Bitmap drawingCache = holder.itemView.getDrawingCache();
-                if (drawingCache != null) {
-
-                    bitmaCache.put(String.valueOf(i), drawingCache);
-                }
-//                holder.itemView.setDrawingCacheEnabled(false);
-//                holder.itemView.destroyDrawingCache();
-                width += holder.itemView.getMeasuredWidth();
-            }
-
-            bigBitmap = Bitmap.createBitmap(view.getMeasuredWidth(), width, Bitmap.Config.ARGB_8888);
-            Canvas bigCanvas = new Canvas(bigBitmap);
-            bigCanvas.drawColor(Color.WHITE);
-
-            for (int i = 0; i < size; i++) {
-                Bitmap bitmap = bitmaCache.get(String.valueOf(i));
-                bigCanvas.drawBitmap(bitmap, iWidth, 0, paint);
-                iWidth += bitmap.getWidth();
-                bitmap.recycle();
-            }
-
-        }
-        return bigBitmap;
     }
 
     public static Bitmap getScreenshotFromTableView(TableLayout view) {

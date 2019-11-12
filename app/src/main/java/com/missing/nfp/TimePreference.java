@@ -12,21 +12,19 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.TimePicker;
 
-public class TimePreference extends DialogPreference {
+class TimePreference extends DialogPreference {
     private int lastHour = 7;
     private int lastMinute = 0;
     private TimePicker picker = null;
-    private String format = "";
-    private Preference time;
 
 
-    public static int getHour(String time) {
+    private static int getHour(String time) {
         String[] pieces = time.split(":");
 
         return (Integer.parseInt(pieces[0]));
     }
 
-    public static int getMinute(String time) {
+    private static int getMinute(String time) {
         String[] pieces = time.split(":");
 
         return (Integer.parseInt(pieces[1]));
@@ -104,6 +102,7 @@ public class TimePreference extends DialogPreference {
     }
 
     public void showTime(int hour, int min) {
+        String format = "";
         if (hour == 0) {
             hour += 12;
             format = "AM";
@@ -115,7 +114,7 @@ public class TimePreference extends DialogPreference {
         } else {
             format = "AM";
         }
-        time = findPreferenceInHierarchy("timePref_Key");
+        Preference time = findPreferenceInHierarchy("timePref_Key");
         if (min < 10) {
             time.setSummary(new StringBuilder().append(hour).append(":0").append(min).append(" ").append(format));
         } else {
