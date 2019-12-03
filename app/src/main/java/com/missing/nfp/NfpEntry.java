@@ -1,8 +1,10 @@
 package com.missing.nfp;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -109,6 +111,59 @@ public class NfpEntry extends AppCompatActivity {
                 }
             }
         });
+
+
+        //clear cell button
+        Button clear = findViewById(R.id.clearCell);
+        clear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+                builder.setCancelable(true);
+                builder.setTitle("Clear This Cell?");
+                builder.setMessage("This will clear all data for this cell.  Continue?");
+                builder.setPositiveButton("Confirm",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                                Intent intent = getIntent();
+                                intent.putExtra("DATE", "");
+                                intent.putExtra("BUTTONROW", r);
+                                intent.putExtra("BUTTONCOL", c);
+                                intent.putExtra("CODE", "");
+                                intent.putExtra("STICKERID", "");
+
+
+                                SharedPreferences.Editor editor = getSharedPreferences("Settings", MODE_PRIVATE).edit();
+                                editor.putString("r" + r + "c" + c + "date", null);
+                                editor.putString("r" + r + "c" + c + "code", null);
+                                editor.putString("r" + r + "c" + c + "comments", null);
+                                editor.putInt("r" + r + "c" + c + "sticker", 0);
+                                editor.putInt("r" + r + "c" + c + "stickerButton", 0);
+                                editor.apply();
+
+                                setResult(1, intent); //The data you want to send back
+
+                                finish();
+
+                            }
+                        });
+                builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //cancel delete
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+
+
+            }
+        });
+
 
         //effects to happen when saving.
         Button save = findViewById(R.id.save);

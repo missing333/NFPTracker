@@ -387,6 +387,7 @@
                 android:gravity="center"
                 android:hint="@string/comments">
 
+
                 <EditText
                     android:id="@+id/comments"
                     android:layout_width="wrap_content"
@@ -402,11 +403,32 @@
 
     </ScrollView>
 
+
+    <Button
+        android:id="@+id/clearCell"
+        android:layout_width="65dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="8dp"
+        android:backgroundTint="@color/colorAccent"
+        android:shadowDx="-5"
+        android:shadowDy="5"
+        android:shadowRadius="5"
+        android:text="@string/clear"
+        android:textColor="@android:color/background_light"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/nfpScrollView" />
+
     <Button
         android:id="@+id/save"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="32dp"
         android:layout_marginBottom="8dp"
@@ -418,8 +440,7 @@
         android:textColor="@android:color/background_light"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/clearCell"
         app:layout_constraintTop_toBottomOf="@+id/nfpScrollView" />
 
 
