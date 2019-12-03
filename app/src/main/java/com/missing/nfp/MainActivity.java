@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.DownloadManager;
 import android.app.PendingIntent;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -24,6 +25,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
+import android.provider.DocumentsContract;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -46,6 +48,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -83,34 +86,6 @@ public class MainActivity extends AppCompatActivity {
 
         populateCells("fromPrefs");
         startAlarming(getApplicationContext());
-
-    }
-
-
-    private void scrollToLastPickedCell() {
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                // Do something after 5s = 5000ms
-
-
-                SharedPreferences prefs = getSharedPreferences("Settings", MODE_PRIVATE);
-                final float lastX = prefs.getFloat("LASTX", 0);
-                final float lastY = prefs.getFloat("LASTY", 0);
-
-                //scroll horizontally **more important for this app
-                final HorizontalScrollView hv = findViewById(R.id.horizontalView);
-                hv.smoothScrollTo((int) lastX - 200, (int) lastY); // these are your x and y coordinates
-
-
-                //scroll vertically
-                final ScrollView sc = findViewById(R.id.layout);
-                sc.smoothScrollTo((int) lastX - 200, (int) lastY); // these are your x and y coordinates
-
-            }
-        }, 300);
-
 
     }
 
@@ -188,8 +163,7 @@ public class MainActivity extends AppCompatActivity {
 
         //Permission has already been granted
         //start creating PDF here.
-        File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-        File fol = new File(dir, "Charti");
+        File fol = new File(getChartiFile());
         if(!fol.exists()) {
             fol.mkdirs();
         }
@@ -279,25 +253,41 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    //TODO: open the folder within the downloads directory directly.
     public static void openDownloads(@NonNull Activity activity) {
         if (isSamsung()) {
             Intent intent = activity.getPackageManager()
                     .getLaunchIntentForPackage("com.sec.android.app.myfiles");
             intent.setAction("samsung.myfiles.intent.action.LAUNCH_MY_FILES");
             intent.putExtra("samsung.myfiles.intent.extra.START_PATH",
-                    getDownloadsFile().getPath());
+                    getChartiFile());
             activity.startActivity(intent);
         }
-        else activity.startActivity(new Intent(DownloadManager.ACTION_VIEW_DOWNLOADS));
+        else {
+            StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+            StrictMode.setVmPolicy(builder.build());
+            Intent chooser = new Intent(Intent.ACTION_VIEW);
+            Uri uri = Uri.parse(getChartiFile());
+            chooser.setDataAndType(uri,"*/*");
+            try {
+                activity.startActivity(chooser);
+            }
+            catch (android.content.ActivityNotFoundException ex)
+            {
+                Toast.makeText(activity, "Please install a File Manager.",
+                        Toast.LENGTH_SHORT).show();
+            }
+        }
     }
     public static boolean isSamsung() {
         String manufacturer = Build.MANUFACTURER;
         if (manufacturer != null) return manufacturer.toLowerCase().equals("samsung");
         return false;
     }
-    public static File getDownloadsFile() {
-        return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+    public static String getChartiFile() {
+        String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath() + "/Charti";
+        Log.d("chartiPath", "path = " + path);
+        return path;
+
     }
 
     private void populateCells(String tag) {
@@ -397,7 +387,7 @@ public class MainActivity extends AppCompatActivity {
                     String savedCode = prefs.getString("r" + i + "c" + j + "code", null);
                     String savedComments = prefs.getString("r" + i + "c" + j + "comments", null);
                     int savedSticker = prefs.getInt("r" + i + "c" + j + "sticker", 0);
-                    Log.d("prefs", savedCode + ", " + savedComments + ", " + savedSticker);
+                    Log.d("prefs", "code: " + savedCode + ", " + "comments: " + savedComments + ", " + "stickerCode: " + savedSticker);
                     String combined = savedDate;
 
                     if (savedCode != null) {
@@ -438,6 +428,33 @@ public class MainActivity extends AppCompatActivity {
         }
 
         scrollToLastPickedCell();
+    }
+
+    private void scrollToLastPickedCell() {
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                // Do something after 5s = 5000ms
+
+
+                SharedPreferences prefs = getSharedPreferences("Settings", MODE_PRIVATE);
+                final float lastX = prefs.getFloat("LASTX", 0);
+                final float lastY = prefs.getFloat("LASTY", 0);
+
+                //scroll horizontally **more important for this app
+                final HorizontalScrollView hv = findViewById(R.id.horizontalView);
+                hv.smoothScrollTo((int) lastX - 200, (int) lastY); // these are your x and y coordinates
+
+
+                //scroll vertically
+                final ScrollView sc = findViewById(R.id.layout);
+                sc.smoothScrollTo((int) lastX - 200, (int) lastY); // these are your x and y coordinates
+
+            }
+        }, 300);
+
+
     }
 
     public static void startAlarming(Context context) {

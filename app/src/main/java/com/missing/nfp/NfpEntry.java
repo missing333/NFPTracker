@@ -229,7 +229,7 @@ public class NfpEntry extends AppCompatActivity {
                 mCode.setSelection(4);
             } else if (savedCode.toLowerCase().contains("4")) {
                 mCode.setSelection(3);
-            } else if (savedCode.toLowerCase().contains("2")) {
+            } else if (savedCode.toLowerCase().startsWith("2")) {
                 mCode.setSelection(2);
             } else if (savedCode.toLowerCase().contains("0")) {
                 mCode.setSelection(1);
@@ -257,10 +257,10 @@ public class NfpEntry extends AppCompatActivity {
             if (savedCode.toLowerCase().contains("g")) {
                 g.setChecked(true);
             }
-            if (savedCode.toLowerCase().contains("p")) {
+            if (savedCode.contains("p")) {
                 p.setChecked(true);
             }
-            if (savedCode.toLowerCase().contains("l ")) {
+            if (savedCode.contains("L ")) {
                 l.setChecked(true);
             }
             if (savedCode.contains("d")) {
@@ -422,7 +422,7 @@ public class NfpEntry extends AppCompatActivity {
             code += "S";
         }
         if (l.isChecked()) {
-            code += "L";
+            code += "L ";
         }
 
         switch (mFreq.getSelectedItemPosition()) {

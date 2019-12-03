@@ -1,6 +1,6 @@
 <resources>
 
-    <string name="versionCode">0.0.8</string>
+    <string name="versionCode">1.0.1</string>
 
     <string name="app_name">Charti</string>
 
@@ -47,7 +47,7 @@
     <string name="pref_ringtone_silent">Silent</string>
     <string name="pref_title_vibrate">Vibrate</string>
     <string name="pref_timepicker">Select time for Notifications</string>
-    <string name="pref_auto_save">Auto-Save your chart when you make a new Entry</string>
+    <string name="pref_auto_save">Auto-Save chart every new Entry</string>
 
     <!-- Strings for the actual notifications -->
     <string name="notifTitle">Go to NFP chart</string>
