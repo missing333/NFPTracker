@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
@@ -74,12 +75,14 @@ public class NfpEntry extends AppCompatActivity {
         Spinner mFreqs = findViewById(R.id.mucusFreq);
         mFreqs.setAdapter(adapter);
 
-        mFreqs.setOnItemSelectedListener(scrollToBottom);
-        redCode.setOnItemSelectedListener(scrollToBottom);
 
 
         //restore button selections
         restoreSelections(r, c);
+
+
+        mFreqs.setOnItemSelectedListener(scrollToBottom);
+        redCode.setOnItemSelectedListener(scrollToBottom);
 
         CheckBox lub = findViewById(R.id.L);
         CheckBox d = findViewById(R.id.d);

@@ -113,11 +113,7 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 
-            if (sharedPref.getBoolean("autoSave", true)){
-                printPDF("autoSave", false);
-            }
         }
     }
 
@@ -494,7 +490,15 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 
+        if (sharedPref.getBoolean("autoSave", true)){
+            printPDF("autoSave", false);
+        }
+    }
 }
 
 
