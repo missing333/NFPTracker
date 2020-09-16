@@ -1,8 +1,7 @@
 <resources>
-
-    <string name="versionCode">1.0.3</string>
-
     <string name="app_name">Charti</string>
+    <string name="versionCode">1.0.4</string>
+
 
     <string name="action_settings">Settings</string>
     <string name="print">Download Chart</string>
