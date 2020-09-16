@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="android-zoom-view.android-zoom-view">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/android-zoom-view/android-zoom-view.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
