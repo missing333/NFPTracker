@@ -84,16 +84,23 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             ((ItemViewHolder) holder).cv_cardview.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
                     Intent intent = new Intent(mContext, NfpEntry.class);
 
                     //Pass data to NfpEntry activity
-                    Log.d(TAG,"Position: " + position);
+                    Log.d(TAG,"Cell #: " + position);
                     Log.d(TAG, "Putting extras now.");
                     intent.putExtra("INDEX", position);
                     intent.putExtra("DATE", mData.get(position).getDate());
                     intent.putExtra("CODE", mData.get(position).getCode());
                     intent.putExtra("COMMENTS", mData.get(position).getComments());
                     intent.putExtra("STICKER", mData.get(position).getSticker());
+
+                    final float multiplier = (float) 2.5;
+                    float x = position/NumRows * 110 * multiplier;
+                    float y = position%NumRows*170 * multiplier;
+                    intent.putExtra("LASTX", x);
+                    intent.putExtra("LASTY", y);
 
                     //mContext.startActivity(intent);
                     ((Activity) mContext).startActivityForResult(intent,333);

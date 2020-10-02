@@ -19,24 +19,27 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
-
-import androidx.annotation.NonNull;
-import androidx.collection.LruCache;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.StaggeredGridLayoutManager;
-
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ScrollView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.collection.LruCache;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.widget.NestedScrollView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.LinearSmoothScroller;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -50,9 +53,10 @@ import java.util.List;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
-
+    private static final String TAG = "MainActivity";
     List<Cell> AllCells;
-    int NumRows;  //Number of Rows is set in RecyclerViewAdapter!!!
+    int NumRows;   //Number of Rows is set in RecyclerViewAdapter!!!
+    int NumCols = 35;
     RecyclerViewAdapter myAdapter;
     RecyclerView myRecycleView;
 
@@ -84,7 +88,9 @@ public class MainActivity extends AppCompatActivity {
         myRecycleView.setAdapter(myAdapter);
 
 
-        populateCells("fromPrefs");
+        populateCells();
+        scrollToLastPickedCell(); //);
+
         startAlarming(getApplicationContext());
 
         Log.d("timing", "End On Create");
@@ -135,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
             return true;
         } else if (id == R.id.action_print) {
             Date c = Calendar.getInstance().getTime();
-            SimpleDateFormat df = new SimpleDateFormat("yyyy-MMM-dd");
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MMM-dd", Locale.US);
             String formattedDate = df.format(c);
             printPDF(formattedDate, true);
             return true;
@@ -202,7 +208,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void populateCells(String tag) {
+    private void populateCells() {
         Log.d("timing", "Starting Populate Cells");
 
         SharedPreferences prefs = getSharedPreferences("Settings", MODE_PRIVATE);
@@ -234,7 +240,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         AllCells.clear();
-        for (int i = 0; i < 210; i++)
+        for (int i = 0; i < NumRows * NumCols; i++)
         {
             String savedDate = prefs.getString(i + "date", "");
             String savedCode = prefs.getString(i + "code", "");
@@ -251,7 +257,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void clearAllCells(){
         AllCells.clear();
-        for(int i=0;i<210;i++){
+        for(int i=0;i<NumRows * NumCols;i++){
             AllCells.add(new Cell("", "", "", 0));
             SharedPreferences.Editor editor = getSharedPreferences("Settings", MODE_PRIVATE).edit();
             editor.putString(i + "date", "");
@@ -275,19 +281,24 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         //continue deleting
-                       /* Toast.makeText(MainActivity.this, "Saving this chart", Toast.LENGTH_LONG).show();
+                        Log.d("clearAll","Clearing All Cells");
                         Date c = Calendar.getInstance().getTime();
-                        SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
+                        SimpleDateFormat df = new SimpleDateFormat("yyyy-MMM-dd", Locale.US);
                         String formattedDate = df.format(c);
-                        printPDF(formattedDate + " Before Clear", false);
-                        //TODO: save when clearing
-                        */
-                        clearAllCells();
+
+                        //auto-save before clearing everything
+                        Toast.makeText(MainActivity.this, "Saving...", Toast.LENGTH_LONG).show();
+                        printPDF( "Before Clear on " + formattedDate, false);
+
+                        //update prefs
                         SharedPreferences.Editor editor = getSharedPreferences("Settings", MODE_PRIVATE).edit();
                         editor.putBoolean("legalNoticeUnderstood", false);
                         editor.putFloat("LASTX", 0);
                         editor.putFloat("LASTY", 0);
                         editor.apply();
+
+                        clearAllCells();
+                        populateCells();
                     }
                 });
         builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
@@ -302,28 +313,35 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void scrollToLastPickedCell() {      //TODO: Fix Scrollview
-        /*final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                // Do something after .3s = 300ms
+        /*SharedPreferences prefs = getSharedPreferences("Settings", MODE_PRIVATE);
+        final int lastPickedCell = prefs.getInt("LASTCELL", 0);
 
+        RecyclerView.SmoothScroller smoothScroller = new
+                LinearSmoothScroller(getApplicationContext()) {
+                    @Override
+                    protected int getVerticalSnapPreference() {
+                        return LinearSmoothScroller.SNAP_TO_START;
+                    }
+                    @Override
+                    protected int getHorizontalSnapPreference() {
+                        return LinearSmoothScroller.SNAP_TO_START;
+                    }
+                };
 
-                SharedPreferences prefs = getSharedPreferences("Settings", MODE_PRIVATE);
-                final float lastX = prefs.getFloat("LASTX", 0);
-                final float lastY = prefs.getFloat("LASTY", 0);
+        smoothScroller.setTargetPosition(lastPickedCell);
+        return  smoothScroller;*/
 
-                //scroll horizontally **more important for this app
-                final HorizontalScrollView hv = findViewById(R.id.horizontalView);
-                hv.smoothScrollTo((int) lastX - 200, (int) lastY); // these are your x and y coordinates
+        SharedPreferences prefs = getSharedPreferences("Settings", MODE_PRIVATE);
+        final float lastX = prefs.getFloat("LASTX", 0);
+        final float lastY = prefs.getFloat("LASTY", 0);
+        Log.d(TAG,"LastX: " + lastX + ", LastY: " + lastY);
 
+        //scroll
+        final NestedScrollView sv = findViewById(R.id.id_scrollView);
+        sv.scrollTo(0, (int) lastY); // these are your x and y coordinates
 
-                //scroll vertically
-                final ScrollView sc = findViewById(R.id.layout);
-                sc.smoothScrollTo((int) lastX - 200, (int) lastY); // these are your x and y coordinates
-
-            }
-        }, 300);*/
+        final RecyclerView rv = findViewById(R.id.id_recyclerview);
+        rv.scrollBy((int) lastX, (int) lastY); // these are your x and y coordinates
 
 
     }
@@ -368,6 +386,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public void printPDF(String pdfName, Boolean displayPDF) {
 
 
@@ -382,30 +401,28 @@ public class MainActivity extends AppCompatActivity {
             file.createNewFile();
             FileOutputStream fOut = new FileOutputStream(file);
 
+            if (displayPDF){
+                Toast.makeText(MainActivity.this, "Saving...", Toast.LENGTH_LONG).show();
+            }
             Bitmap bm = getScreenshotFromRecyclerView(myRecycleView);
-            //bm = PDFTools.getScreenshotFromTableView(tLayout);
 
+            int reducer = 7;
+            int pageWidth = 842;
+            int pageHeight = 595;
 
-            //saveImage(bm);
-            /*ImageView im
-                    = new ImageView(getActivity());
-            im.setImageBitmap(bm);
-            new AlertDialog.Builder(getActivity()).setView(im).show();*/
-
-
+            //Page1
             PdfDocument document = new PdfDocument();
-            PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(bm.getWidth() + 100, bm.getHeight() + 100, 1).create();
-            PdfDocument.Page page = document.startPage(pageInfo);
+            PdfDocument.PageInfo pageInfo1 = new PdfDocument.PageInfo.Builder(pageWidth, pageHeight, 1).create();
+            PdfDocument.Page page1 = document.startPage(pageInfo1);
+            page1.getCanvas().drawBitmap(bm, null, new Rect(10, 0, bm.getWidth()/reducer, bm.getHeight()/reducer), null);
+            document.finishPage(page1);
 
+            //Page2
+            PdfDocument.PageInfo pageInfo2 = new PdfDocument.PageInfo.Builder(pageWidth, pageHeight, 2).create();
+            PdfDocument.Page page2 = document.startPage(pageInfo2);
+            page2.getCanvas().drawBitmap(bm, null, new Rect(-bm.getWidth()/(reducer*2), 0, bm.getWidth()/(reducer*2), bm.getHeight()/reducer), null);
+            document.finishPage(page2);
 
-            // draw table on the page
-            Canvas canvas = page.getCanvas();
-            canvas.drawBitmap(bm, null, new Rect(50, 50, bm.getWidth(), bm.getHeight()), null);
-
-
-            // finish the page
-            document.finishPage(page);
-            // add more pages
             // write the document content
             document.writeTo(fOut);
             document.close();
@@ -436,7 +453,6 @@ public class MainActivity extends AppCompatActivity {
         Bitmap bigBitmap = null;
         if (adapter != null) {
             int size = adapter.getItemCount();
-            int height = 0;
             int width = 0;
             Paint paint = new Paint();
             int iHeight = 0;
@@ -464,7 +480,6 @@ public class MainActivity extends AppCompatActivity {
                 if (drawingCache != null) {
                     bitmaCache.put(String.valueOf(i), drawingCache);
                 }
-                height += iHeight;
                 width += iWidth;
                 //iHeight = tempHeight;
             }
@@ -478,6 +493,7 @@ public class MainActivity extends AppCompatActivity {
             float tempHeight = 0f;
             for (int i = 0; i < size; i++) {
                 Bitmap bitmap = bitmaCache.get(String.valueOf(i));
+                assert bitmap != null;
                 bigCanvas.drawBitmap(bitmap, tempWidth, tempHeight, paint);
                 tempHeight += bitmap.getHeight();
                 bitmap.recycle();

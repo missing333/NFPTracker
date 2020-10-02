@@ -29,6 +29,7 @@ import java.util.Locale;
 @SuppressWarnings("deprecation")
 public class NfpEntry extends AppCompatActivity {
 
+    private static final String TAG = "NfpEntry";
     CalendarView date;
     long dateInMillis;
     RadioButton noBlood, brownBlood, LR, MR, HR;
@@ -45,8 +46,9 @@ public class NfpEntry extends AppCompatActivity {
         setContentView(R.layout.activity_nfp_entry);
 
         final int index = getIntent().getIntExtra("INDEX", 0);
-        final float lastX = getIntent().getFloatExtra("BUTTONXPOS", 0);
-        final float lastY = getIntent().getFloatExtra("BUTTONYPOS", 0);
+        final float lastX = getIntent().getFloatExtra("LASTX", 0);
+        final float lastY = getIntent().getFloatExtra("LASTY", 0);
+        Log.d(TAG,"Received Coords: X: " + lastX + ", Y: " + lastY);
 
         ////Set activity to smaller 'popup' window
         DisplayMetrics dm = new DisplayMetrics();
@@ -161,6 +163,8 @@ public class NfpEntry extends AppCompatActivity {
                                 editor.putString(index + "comments", "");
                                 editor.putInt(index + "sticker", 0);
                                 editor.putInt(index + "stickerButton", 0);
+                                editor.putFloat("LASTX", 0);
+                                editor.putFloat("LASTY", 0);
                                 editor.apply();
 
                                 setResult(1, intent); //The data you want to send back
@@ -213,6 +217,8 @@ public class NfpEntry extends AppCompatActivity {
                 editor.putFloat("LASTX", lastX);
                 editor.putFloat("LASTY", lastY);
                 editor.apply();
+
+                Log.d(TAG,"Setting Coords: X: " + lastX + ", Y: " + lastY);
 
                 setResult(1, intent); //The data you want to send back
 
