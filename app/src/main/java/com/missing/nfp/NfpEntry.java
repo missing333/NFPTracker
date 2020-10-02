@@ -26,6 +26,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
+@SuppressWarnings("deprecation")
 public class NfpEntry extends AppCompatActivity {
 
     CalendarView date;
@@ -193,16 +194,6 @@ public class NfpEntry extends AppCompatActivity {
                 String comments = commentsView.getText().toString();
                 int stickerID = getStickerID();
                 String code = generateFinalCode();
-                String combined = code ;
-
-                //add new line if anything else is present, otherwise just add comments
-                if (comments.length() > 0) {
-                    if (combined.length() > 0) {
-                        combined += "\n" + comments;
-                    }else {
-                        combined = comments;
-                    }
-                }
 
 
                 Intent intent = getIntent();
@@ -238,21 +229,21 @@ public class NfpEntry extends AppCompatActivity {
         RadioButton babyYellow = findViewById(R.id.babyYellow);
         RadioButton baby = findViewById(R.id.baby);
 
-        int code = 0;
+        int stickerCode = 0;
         if (green.isChecked())
-            code = R.drawable.sticker_green;
+            stickerCode = R.drawable.sticker_green;
         else if (yellow.isChecked())
-            code = R.drawable.sticker_yellow;
+            stickerCode = R.drawable.sticker_yellow;
         else if (red.isChecked())
-            code = R.drawable.sticker_red;
+            stickerCode = R.drawable.sticker_red;
         else if (babyGreen.isChecked())
-            code = R.drawable.sticker_baby_green;
+            stickerCode = R.drawable.sticker_baby_green;
         else if (babyYellow.isChecked())
-            code = R.drawable.sticker_baby_yellow;
+            stickerCode = R.drawable.sticker_baby_yellow;
         else if (baby.isChecked())
-            code = R.drawable.sticker_baby;
-        Log.d("NFPEntry","sticker Code = " + code);
-        return code;
+            stickerCode = R.drawable.sticker_baby;
+        Log.d("NFPEntry","sticker Code = " + stickerCode);
+        return stickerCode;
     }
 
     private String generateFinalCode() {
@@ -267,7 +258,6 @@ public class NfpEntry extends AppCompatActivity {
         CheckBox w = findViewById(R.id.w);
         CheckBox s = findViewById(R.id.s);
         CheckBox i = findViewById(R.id.Intercourse);
-        RadioGroup peakGroup = findViewById(R.id.peakGroup);
         RadioButton peak = findViewById(R.id.peak);
         RadioButton peak1 = findViewById(R.id.p1);
         RadioButton peak2 = findViewById(R.id.p2);
@@ -335,7 +325,7 @@ public class NfpEntry extends AppCompatActivity {
             dateInMillis = view.getDate();
             Log.d("dateCode", "date changed to: " + dateInMillis + ", aka " + dateCode);
             final ScrollView sc = findViewById(R.id.nfpScrollView);
-            sc.smoothScrollTo((int) 0, (int) 350); // these are your x and y coordinates
+            sc.smoothScrollTo(0, 350); // these are your x and y coordinates
         }
     };
 
@@ -402,7 +392,7 @@ public class NfpEntry extends AppCompatActivity {
         }
         Log.d("bloodCode","bloodCode is: " + bloodCode);
         final ScrollView sc = findViewById(R.id.nfpScrollView);
-        sc.smoothScrollTo((int) 0, (int) 550); // these are your x and y coordinates
+        sc.smoothScrollTo(0, 550); // these are your x and y coordinates
     }
 
     public void onRadioMucusButtonClicked(View view) {
@@ -419,7 +409,7 @@ public class NfpEntry extends AppCompatActivity {
                     M10Button.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
                     mucusCode = "0 AD";
                     freqCode = "";
-                    if(bloodCode == ""){
+                    if(bloodCode.equals("")){
                         RadioButton tempB = stickerGroup.findViewById(R.id.green);
                         tempB.setChecked(true);
                     }
@@ -486,7 +476,7 @@ public class NfpEntry extends AppCompatActivity {
 
         Log.d("mucusRadio", "Mucus Code is: " + mucusCode);
         final ScrollView sc = findViewById(R.id.nfpScrollView);
-        sc.smoothScrollTo((int) 0, (int) 850); // these are your x and y coordinates
+        sc.smoothScrollTo(0, 850); // these are your x and y coordinates
         if(view.getId() == R.id.noMucus){
             showHideGroups(View.GONE);
         }else {
@@ -539,7 +529,7 @@ public class NfpEntry extends AppCompatActivity {
 
         Log.d("freqRadio","freqCode is: " + freqCode);
         final ScrollView sc = findViewById(R.id.nfpScrollView);
-        sc.smoothScrollTo((int) 0, (int) 1150); // these are your x and y coordinates
+        sc.smoothScrollTo(0, 1150); // these are your x and y coordinates
     }
 
     private void restoreSelections(int index) {
@@ -567,6 +557,7 @@ public class NfpEntry extends AppCompatActivity {
         String savedComments = prefs.getString(index + "comments", "");
         int savedStickerButton = prefs.getInt(index + "stickerButton", 0);
 
+        assert savedDate != null;
         if (savedDate.length() > 0) {
             String[] parts = savedDate.split("/");
 
@@ -645,7 +636,7 @@ public class NfpEntry extends AppCompatActivity {
 
             freqCode = "";
             if (savedCode.toLowerCase().contains("ad")) {
-                if(mucusCode != "0"){   //i have AD in the 0 case anyway, so don't need to double up.
+                if(!mucusCode.equals("0")){   //i have AD in the 0 case anyway, so don't need to double up.
                     freqAD.setChecked(true);
                     freqAD.setTextColor(Color.WHITE);
                     freqCode = " AD";

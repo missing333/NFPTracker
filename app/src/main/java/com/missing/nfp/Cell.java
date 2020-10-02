@@ -2,25 +2,18 @@ package com.missing.nfp;
 
 public class Cell {
 
-    private int Index;
     private String Date;
     private String Code;
     private String Comments;
-    private String Summation;
     private int Sticker;
 
-    public Cell(){
-    }
 
-    public Cell(int index, String date, String code, String comments, int sticker) {
-        Index = index;
+    public Cell(String date, String code, String comments, int sticker) {
         Date = date;
         Code = code;
         Comments = comments;
         Sticker = sticker;
     }
-
-    public int getIndex() {return Index; }
 
     public String getDate() {
         return Date;
@@ -40,32 +33,7 @@ public class Cell {
 
     public String getSummation() {
 
-        Summation = this.Date + "\n" + this.Code + "\n" + this.Comments;
-
-        return Summation;
+        return this.Date + "\n" + this.Code + "\n" + this.Comments;
     }
 
-    public void setSummation(String summation) {
-        Summation = summation;
-    }
-
-    public void setIndex(int index) {
-        Index = index;
-    }
-
-    public void setDate(String date) {
-        Date = date;
-    }
-
-    public void setCode(String code) {
-        Code = code;
-    }
-
-    public void setComments(String comments) {
-        Comments = comments;
-    }
-
-    public void setSticker(int sticker) {
-        Sticker = sticker;
-    }
 }

@@ -23,8 +23,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private static final String TAG = "RecyclerViewAdapter";
     private Context mContext;
     private List<Cell> mData;
-    static final int NumRows = 7;
+    static final int NumRows = 7;  //also change NumRows in MainActivity!!!
 
+
+    public int getNumRows() {
+        return NumRows;
+    }
 
     public RecyclerViewAdapter(Context mContext, List<Cell> mData) {
         this.mContext = mContext;
@@ -41,10 +45,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     private boolean isPositionHeader(int position) {
-        if (position % NumRows == 0){
-            return true;
-        }
-        return false;
+        return position % NumRows == 0;
     }
 
     @NonNull
@@ -66,13 +67,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
 
     @Override
-    public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, final int position) {
 
 
         if (holder instanceof HeaderViewHolder) {
 
             //set the Header Label
-            ((HeaderViewHolder) holder).txtName.setText(1+position/NumRows+"");
+            String text = 1+position/NumRows+"";
+            ((HeaderViewHolder) holder).txtName.setText(text);
 
             //similarly bind other UI components or perform operations
 
@@ -120,7 +122,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             View = itemView;
 
             // add your ui components here like this below
-            txtName = (TextView) View.findViewById(R.id.id_header_label);
+            txtName = View.findViewById(R.id.id_header_label);
 
         }
     }
@@ -133,9 +135,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         public ItemViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            tv_cell_code = (TextView) itemView.findViewById(R.id.id_cell_code);
-            img_sticker = (ImageView) itemView.findViewById(R.id.id_sticker_code);
-            cv_cardview = (CardView) itemView.findViewById(R.id.id_whole_cell);
+            tv_cell_code = itemView.findViewById(R.id.id_cell_code);
+            img_sticker = itemView.findViewById(R.id.id_sticker_code);
+            cv_cardview = itemView.findViewById(R.id.id_whole_cell);
         }
     }
 

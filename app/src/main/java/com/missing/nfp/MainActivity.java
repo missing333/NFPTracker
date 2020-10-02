@@ -14,14 +14,11 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.graphics.Typeface;
-import android.graphics.drawable.GradientDrawable;
 import android.graphics.pdf.PdfDocument;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
 
@@ -36,17 +33,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.HorizontalScrollView;
-import android.widget.ImageView;
-import android.widget.ScrollView;
-import android.widget.TableLayout;
-import android.widget.TableRow;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -63,7 +52,7 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity {
 
     List<Cell> AllCells;
-    static final int NumRows = 7;
+    int NumRows;  //Number of Rows is set in RecyclerViewAdapter!!!
     RecyclerViewAdapter myAdapter;
     RecyclerView myRecycleView;
 
@@ -87,8 +76,9 @@ public class MainActivity extends AppCompatActivity {
                     2);
 
         }
-        myRecycleView = (RecyclerView) findViewById(R.id.id_recyclerview);
+        myRecycleView = findViewById(R.id.id_recyclerview);
         myAdapter = new RecyclerViewAdapter(this, AllCells);
+        NumRows = myAdapter.getNumRows();
         StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(NumRows, LinearLayoutManager.HORIZONTAL);
         myRecycleView.setLayoutManager(staggeredGridLayoutManager); // set LayoutManager to RecyclerView
         myRecycleView.setAdapter(myAdapter);
@@ -114,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
                 String comments = data.getStringExtra("COMMENTS");
                 int stickerID = data.getIntExtra("STICKER", 0);
 
-                AllCells.set(index, new Cell(index,activeDate,code,comments,stickerID));
+                AllCells.set(index, new Cell(activeDate,code,comments,stickerID));
 
                 myAdapter.notifyItemChanged(index);
 
@@ -251,7 +241,7 @@ public class MainActivity extends AppCompatActivity {
             String savedComments = prefs.getString(i + "comments", "");
             int savedStickerButton = prefs.getInt(i + "sticker", 0);
 
-            AllCells.add(new Cell(i, savedDate, savedCode, savedComments, savedStickerButton));
+            AllCells.add(new Cell(savedDate, savedCode, savedComments, savedStickerButton));
         }
         myAdapter.notifyDataSetChanged();
 
@@ -262,7 +252,7 @@ public class MainActivity extends AppCompatActivity {
     private void clearAllCells(){
         AllCells.clear();
         for(int i=0;i<210;i++){
-            AllCells.add(new Cell(i, "", "", "", 0));
+            AllCells.add(new Cell("", "", "", 0));
             SharedPreferences.Editor editor = getSharedPreferences("Settings", MODE_PRIVATE).edit();
             editor.putString(i + "date", "");
             editor.putString(i + "code", "");
@@ -450,7 +440,7 @@ public class MainActivity extends AppCompatActivity {
             int width = 0;
             Paint paint = new Paint();
             int iHeight = 0;
-            float iWidth = 0f;
+            int iWidth = 0;
             final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
 
             // Use 1/8th of the available memory for this memory cache.
@@ -463,36 +453,37 @@ public class MainActivity extends AppCompatActivity {
                 adapter.onBindViewHolder(holder, i);
                 holder.itemView.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
                         View.MeasureSpec.makeMeasureSpec(view.getHeight(), View.MeasureSpec.EXACTLY));
-                int tempWidth = holder.itemView.getMeasuredWidth();
+                iWidth = holder.itemView.getMeasuredWidth();
                 holder.itemView.measure(View.MeasureSpec.makeMeasureSpec(view.getWidth(), View.MeasureSpec.EXACTLY),
                                         View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-                int tempHeight = holder.itemView.getMeasuredWidth();
-                holder.itemView.layout(0, 0, tempWidth, tempHeight);
+                iHeight = holder.itemView.getMeasuredHeight();
+                holder.itemView.layout(0, 0, iWidth, iHeight);
                 holder.itemView.setDrawingCacheEnabled(true);
                 holder.itemView.buildDrawingCache();
                 Bitmap drawingCache = holder.itemView.getDrawingCache();
                 if (drawingCache != null) {
                     bitmaCache.put(String.valueOf(i), drawingCache);
                 }
-                height += tempHeight;
-                width += tempWidth;
-                iWidth = holder.itemView.getMeasuredWidth();
+                height += iHeight;
+                width += iWidth;
+                //iHeight = tempHeight;
             }
 
-            bigBitmap = Bitmap.createBitmap(width, view.getMeasuredHeight(), Bitmap.Config.ARGB_8888);
+            bigBitmap = Bitmap.createBitmap(width/NumRows, view.getMeasuredHeight(), Bitmap.Config.ARGB_8888);
             Canvas bigCanvas = new Canvas(bigBitmap);
             bigCanvas.drawColor(Color.WHITE);
 
             //this part draws the cache onto the BigBitmap
             float tempWidth = 0f;
+            float tempHeight = 0f;
             for (int i = 0; i < size; i++) {
                 Bitmap bitmap = bitmaCache.get(String.valueOf(i));
-                bigCanvas.drawBitmap(bitmap, tempWidth, iHeight, paint);
-                iHeight += bitmap.getHeight();
+                bigCanvas.drawBitmap(bitmap, tempWidth, tempHeight, paint);
+                tempHeight += bitmap.getHeight();
                 bitmap.recycle();
-                if (i % NumRows == 0){
+                if (i % NumRows == NumRows-1){
                     tempWidth += iWidth;
-                    iHeight = 0;
+                    tempHeight = 0;
                 }
             }
 
