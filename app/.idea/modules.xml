@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-1190243592/NFPTracker.iml" filepath="$PROJECT_DIR$/.idea/modules/-1190243592/NFPTracker.iml" group="NFPTracker" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-253180118/android-zoom-view.iml" filepath="$PROJECT_DIR$/.idea/modules/-253180118/android-zoom-view.iml" group="NFPTracker/android-zoom-view" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app.iml" filepath="$PROJECT_DIR$/.idea/modules/app.iml" group="NFPTracker/app" />
+    </modules>
+  </component>
+</project>

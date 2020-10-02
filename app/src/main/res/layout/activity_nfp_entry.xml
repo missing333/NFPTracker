@@ -53,25 +53,96 @@
                     android:layout_weight="1"
                     android:gravity="center_horizontal"
                     android:text="@string/red_level"
-                    android:textColor="@color/colorAccent" />
+                    android:textColor="@android:color/darker_gray"  />
 
             </TableRow>
 
             <TableRow
-                android:gravity="center"
-                android:paddingBottom="25dp">
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_horizontal"
+                android:layout_marginBottom="11dp">
 
-                <Spinner
-                    android:id="@+id/redCode"
-                    android:layout_width="0dp"
+                <RadioGroup
+                    android:id="@+id/bloodGroup"
+                    android:layout_width="250dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="75dp"
-                    android:layout_marginEnd="75dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/back"
-                    android:entries="@array/redCodeArray"
-                    android:gravity="center"
-                    android:padding="10dp" />
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="15dp">
+
+                    <RadioButton
+                        android:id="@+id/noBlood"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/radio_blood_na_selector"
+                        android:button="@android:color/transparent"
+                        android:gravity="center"
+                        android:padding="7dp"
+                        android:text="none"
+                        android:onClick="onRadioBloodButtonClicked"
+                        android:textColor="@android:color/darker_gray" />
+
+                    <RadioButton
+                        android:id="@+id/brownBlood"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_marginStart="-1dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/radio_blood_b_selector"
+                        android:button="@android:color/transparent"
+                        android:checked="false"
+                        android:gravity="center"
+                        android:padding="7dp"
+                        android:text="B"
+                        android:onClick="onRadioBloodButtonClicked"
+                        android:textColor="@color/brown" />
+
+                    <RadioButton
+                        android:id="@+id/lightRedBlood"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_weight="1"
+                        android:layout_marginStart="-1dp"
+                        android:background="@drawable/radio_blood_lr_selector"
+                        android:button="@android:color/transparent"
+                        android:checked="false"
+                        android:gravity="center"
+                        android:padding="7dp"
+                        android:text="LR"
+                        android:onClick="onRadioBloodButtonClicked"
+                        android:textColor="@color/lightRed" />
+
+                    <RadioButton
+                        android:id="@+id/medRedBlood"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_weight="1"
+                        android:layout_marginStart="-1dp"
+                        android:background="@drawable/radio_blood_mr_selector"
+                        android:button="@android:color/transparent"
+                        android:checked="false"
+                        android:gravity="center"
+                        android:onClick="onRadioBloodButtonClicked"
+                        android:padding="7dp"
+                        android:text="MR"
+                        android:textColor="@color/medRed" />
+
+                    <RadioButton
+                        android:id="@+id/heavyRedBlood"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_weight="1"
+                        android:layout_marginStart="-1dp"
+                        android:background="@drawable/radio_blood_hr_selector"
+                        android:button="@android:color/transparent"
+                        android:checked="false"
+                        android:gravity="center"
+                        android:onClick="onRadioBloodButtonClicked"
+                        android:padding="7dp"
+                        android:text="HR"
+                        android:textColor="@color/darkRed" />
+                </RadioGroup>
 
             </TableRow>
 
@@ -86,20 +157,12 @@
                     android:layout_weight="1"
                     android:gravity="center_horizontal"
                     android:text="@string/mucuscodelabel"
-                    android:textColor="@color/colorAccent" />
+                    android:textColor="@android:color/darker_gray" />
 
-                <TextView
-                    android:id="@+id/mucusFreqLabel"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center_horizontal"
-                    android:text="@string/mucus_frequency"
-                    android:textColor="@color/colorAccent" />
             </TableRow>
 
             <TableRow
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center">
 
@@ -110,7 +173,8 @@
                     android:layout_weight="1"
                     android:background="@drawable/back"
                     android:entries="@array/mucusCodesArray"
-                    android:gravity="center" />
+                    android:gravity="center"
+                    android:visibility="gone" />
 
                 <Spinner
                     android:id="@+id/mucusFreq"
@@ -119,10 +183,206 @@
                     android:layout_weight="1"
                     android:background="@drawable/back"
                     android:entries="@array/mucusFreqArray"
-                    android:gravity="center" />
+                    android:gravity="center"
+                    android:visibility="gone" />
+
+                <com.missing.nfp.RelativeRadioGroup
+                    android:layout_marginBottom="10dp"
+                    android:layout_height="100dp"
+                    android:layout_marginTop="5dp">
+
+                    <View
+                        android:id="@+id/strut"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_centerHorizontal="true" />
+
+                    <RadioButton
+                        android:id="@+id/noMucus"
+                        android:layout_width="70dp"
+                        android:layout_height="50dp"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
+                        android:layout_weight="1"
+                        android:background="@drawable/radio_mucus_nomucus_selector"
+                        android:button="@android:color/transparent"
+                        android:gravity="center"
+                        android:text="0 - No Mucus"
+                        android:onClick="onRadioMucusButtonClicked"
+                        android:textColor="@color/colorPrimaryDark" />
+
+                    <RadioButton
+                        android:id="@+id/mucus2"
+                        android:layout_width="70dp"
+                        android:layout_height="50dp"
+                        android:layout_marginStart="-1dp"
+                        android:layout_weight="1"
+                        android:layout_toRightOf="@id/noMucus"
+                        android:background="@drawable/radio_mucus_2_selector"
+                        android:button="@android:color/transparent"
+                        android:checked="false"
+                        android:gravity="center"
+                        android:text="2 - Damp"
+                        android:onClick="onRadioMucusButtonClicked"
+                        android:textColor="@color/colorPrimaryDark" />
+
+                    <RadioButton
+                        android:id="@+id/mucus4"
+                        android:layout_width="70dp"
+                        android:layout_height="50dp"
+                        android:layout_weight="1"
+                        android:layout_toRightOf="@id/mucus2"
+                        android:layout_marginStart="-1dp"
+                        android:background="@drawable/radio_mucus_4_selector"
+                        android:button="@android:color/transparent"
+                        android:checked="false"
+                        android:gravity="center"
+                        android:text="4 - Wet"
+                        android:onClick="onRadioMucusButtonClicked"
+                        android:textColor="@color/colorPrimaryDark" />
+
+                    <RadioButton
+                        android:id="@+id/mucus6"
+                        android:layout_width="70dp"
+                        android:layout_height="50dp"
+                        android:layout_below="@+id/noMucus"
+                        android:layout_marginTop="-1dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/radio_mucus_6_selector"
+                        android:button="@android:color/transparent"
+                        android:checked="false"
+                        android:gravity="center"
+                        android:onClick="onRadioMucusButtonClicked"
+                        android:text="6 - Sticky"
+                        android:textColor="@color/colorPrimaryDark" />
+
+                    <RadioButton
+                        android:id="@+id/mucus8"
+                        android:layout_width="70dp"
+                        android:layout_height="50dp"
+                        android:layout_below="@id/mucus2"
+                        android:layout_marginStart="-1dp"
+                        android:layout_marginTop="-1dp"
+                        android:layout_marginBottom="101dp"
+                        android:layout_toRightOf="@+id/mucus6"
+                        android:layout_weight="1"
+                        android:background="@drawable/radio_mucus_8_selector"
+                        android:button="@android:color/transparent"
+                        android:checked="false"
+                        android:gravity="center"
+                        android:onClick="onRadioMucusButtonClicked"
+                        android:text="8 - Tacky"
+                        android:textColor="@color/colorPrimaryDark" />
+
+                    <RadioButton
+                        android:id="@+id/mucus10"
+                        android:layout_width="70dp"
+                        android:layout_height="50dp"
+                        android:layout_marginStart="-1dp"
+                        android:layout_marginTop="-1dp"
+                        android:layout_below="@+id/mucus4"
+                        android:layout_toRightOf="@id/mucus8"
+                        android:layout_weight="1"
+                        android:background="@drawable/radio_mucus_10_selector"
+                        android:button="@android:color/transparent"
+                        android:checked="false"
+                        android:gravity="center"
+                        android:onClick="onRadioMucusButtonClicked"
+                        android:text="10 - Stretchy"
+                        android:textColor="@color/colorPrimaryDark" />
+                </com.missing.nfp.RelativeRadioGroup>
+
             </TableRow>
 
             <TableRow
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center">
+
+
+                <TextView
+                    android:visibility="gone"
+                    android:id="@+id/mucusFreqLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:text="@string/mucus_frequency"
+                    android:textColor="@android:color/darker_gray" />
+
+            </TableRow>
+
+            <TableRow>
+                <RadioGroup
+                    android:visibility="gone"
+                    android:id="@+id/freqGroup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="30dp">
+
+                    <RadioButton
+                        android:id="@+id/allDay"
+                        android:layout_width="wrap_content"
+                        android:layout_height="50dp"
+                        android:layout_weight="2"
+                        android:background="@drawable/radio_freq_ad_selector"
+                        android:button="@null"
+                        android:padding="5dp"
+                        android:textAlignment="center"
+                        android:onClick="onRadioFreqButtonClicked"
+                        android:textColor="@color/freq"
+                        android:text="@string/all_day" />
+
+                    <RadioButton
+                        android:id="@+id/freq1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="50dp"
+                        android:layout_weight="1"
+                        android:layout_marginStart="-1dp"
+                        android:background="@drawable/radio_freq_1_selector"
+                        android:button="@null"
+                        android:padding="5dp"
+                        android:textAlignment="center"
+                        android:onClick="onRadioFreqButtonClicked"
+                        android:textColor="@color/freq"
+                        android:text="x1" />
+
+                    <RadioButton
+                        android:id="@+id/freq2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="50dp"
+                        android:layout_weight="1"
+                        android:layout_marginStart="-1dp"
+                        android:background="@drawable/radio_freq_1_selector"
+                        android:button="@null"
+                        android:padding="5dp"
+                        android:textColor="@color/freq"
+                        android:onClick="onRadioFreqButtonClicked"
+                        android:textAlignment="center"
+                        android:text="x2" />
+
+                    <RadioButton
+                        android:id="@+id/freq3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="50dp"
+                        android:layout_weight="1"
+                        android:layout_marginStart="-1dp"
+                        android:background="@drawable/radio_freq_3_selector"
+                        android:button="@null"
+                        android:padding="5dp"
+                        android:textColor="@color/freq"
+                        android:onClick="onRadioFreqButtonClicked"
+                        android:textAlignment="center"
+                        android:text="x3" />
+
+                </RadioGroup>
+            </TableRow>
+
+            <TableRow
+                android:visibility="gone"
+                android:id="@+id/modifiersGroup"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center_horizontal"
@@ -141,6 +401,8 @@
                         android:id="@+id/c"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:paddingEnd="10dp"
+                        android:paddingStart="-5dp"
                         android:layout_weight="1"
                         android:text="@string/cloudy" />
 
@@ -148,6 +410,8 @@
                         android:id="@+id/k"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:paddingEnd="10dp"
+                        android:paddingStart="-5dp"
                         android:layout_weight="1"
                         android:text="@string/clear" />
 
@@ -155,6 +419,8 @@
                         android:id="@+id/y"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:paddingEnd="10dp"
+                        android:paddingStart="-5dp"
                         android:layout_weight="1"
                         android:text="@string/yellow" />
 
@@ -162,6 +428,8 @@
                         android:id="@+id/g"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:paddingEnd="10dp"
+                        android:paddingStart="-5dp"
                         android:layout_weight="1"
                         android:text="@string/gummy" />
 
@@ -169,6 +437,8 @@
                         android:id="@+id/p"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:paddingEnd="10dp"
+                        android:paddingStart="-5dp"
                         android:layout_weight="1"
                         android:text="@string/pasty" />
 
@@ -176,6 +446,8 @@
                         android:id="@+id/L"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:paddingEnd="10dp"
+                        android:paddingStart="-5dp"
                         android:layout_weight="1"
                         android:text="@string/lubricative" />
 
@@ -183,6 +455,8 @@
                         android:id="@+id/d"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:paddingEnd="10dp"
+                        android:paddingStart="-5dp"
                         android:layout_weight="1"
                         android:text="@string/damp" />
 
@@ -190,6 +464,8 @@
                         android:id="@+id/w"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:paddingEnd="10dp"
+                        android:paddingStart="-5dp"
                         android:layout_weight="1"
                         android:text="@string/wet" />
 
@@ -197,6 +473,8 @@
                         android:id="@+id/s"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:paddingEnd="10dp"
+                        android:paddingStart="-5dp"
                         android:layout_weight="1"
                         android:text="@string/shiny" />
 
@@ -232,11 +510,12 @@
                     android:layout_weight="1"
                     android:gravity="center_horizontal"
                     android:text="@string/sticker_selection"
-                    android:textColor="@color/colorAccent" />
+                    android:textColor="@android:color/darker_gray" />
             </TableRow>
 
             <TableRow
                 android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
                 android:gravity="center_horizontal">
 
                 <RadioGroup
