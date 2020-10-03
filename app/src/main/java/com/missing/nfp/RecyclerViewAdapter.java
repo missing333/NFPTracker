@@ -96,8 +96,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     intent.putExtra("COMMENTS", mData.get(position).getComments());
                     intent.putExtra("STICKER", mData.get(position).getSticker());
 
-                    final float multiplier = (float) 2.5;
-                    float x = position/NumRows * 110 * multiplier;
+                    final float multiplier = (float) 2;
+                    float x = (float) position/NumRows * 110 * multiplier;
                     float y = position%NumRows*170 * multiplier;
                     intent.putExtra("LASTX", x);
                     intent.putExtra("LASTY", y);

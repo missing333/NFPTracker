@@ -216,6 +216,7 @@ public class NfpEntry extends AppCompatActivity {
                 editor.putInt(index + "stickerButton", radioGroup.getCheckedRadioButtonId());
                 editor.putFloat("LASTX", lastX);
                 editor.putFloat("LASTY", lastY);
+                editor.putInt("LASTINDEX", index);
                 editor.apply();
 
                 Log.d(TAG,"Setting Coords: X: " + lastX + ", Y: " + lastY);

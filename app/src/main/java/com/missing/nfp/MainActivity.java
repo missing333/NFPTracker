@@ -19,14 +19,12 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ScrollView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -37,7 +35,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.LinearSmoothScroller;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
@@ -334,14 +331,18 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences prefs = getSharedPreferences("Settings", MODE_PRIVATE);
         final float lastX = prefs.getFloat("LASTX", 0);
         final float lastY = prefs.getFloat("LASTY", 0);
+        final int lastIndex = prefs.getInt("LASTINDEX", 0);
         Log.d(TAG,"LastX: " + lastX + ", LastY: " + lastY);
+        Log.d(TAG,"LastIndex: " + lastIndex);
 
         //scroll
         final NestedScrollView sv = findViewById(R.id.id_scrollView);
         sv.scrollTo(0, (int) lastY); // these are your x and y coordinates
 
+        //TODO:Scroll in Y!!!! jeez
         final RecyclerView rv = findViewById(R.id.id_recyclerview);
         rv.scrollBy((int) lastX, (int) lastY); // these are your x and y coordinates
+        //rv.smoothScrollToPosition(lastIndex);
 
 
     }
