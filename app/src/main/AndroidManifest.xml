@@ -11,7 +11,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/app_icon_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:launchMode="singleTask">
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
@@ -25,13 +26,15 @@
 
         <activity
             android:name=".NfpEntry"
-            android:theme="@style/AppTheme.Modal.EasyRemove" />
+            android:theme="@style/AppTheme.Modal.EasyRemove"
+            android:launchMode="singleTask" />
 
         <activity
             android:name=".NotifSettings"
             android:label="@string/title_activity_settings"
             android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme"
+            android:launchMode="singleTask">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.missing.nfp.MainActivity" />

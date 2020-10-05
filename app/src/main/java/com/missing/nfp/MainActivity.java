@@ -56,6 +56,8 @@ public class MainActivity extends AppCompatActivity {
     int NumCols = 35;
     RecyclerViewAdapter myAdapter;
     RecyclerView myRecycleView;
+    NestedScrollView myScrollView;
+    //TODO: make scrolling horizontally more forgiving
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,20 +79,40 @@ public class MainActivity extends AppCompatActivity {
                     2);
 
         }
+
         myRecycleView = findViewById(R.id.id_recyclerview);
+        myScrollView = findViewById(R.id.id_scrollView);
         myAdapter = new RecyclerViewAdapter(this, AllCells);
         NumRows = myAdapter.getNumRows();
         StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(NumRows, LinearLayoutManager.HORIZONTAL);
         myRecycleView.setLayoutManager(staggeredGridLayoutManager); // set LayoutManager to RecyclerView
+        myRecycleView.setNestedScrollingEnabled(false);
         myRecycleView.setAdapter(myAdapter);
 
 
         populateCells();
-        scrollToLastPickedCell(); //);
+        scrollToLastPickedCell();
 
         startAlarming(getApplicationContext());
 
         Log.d("timing", "End On Create");
+    }
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        //get scroll positions
+        int scrollY = myScrollView.getScrollY();
+        RecyclerView recyclerView = findViewById(R.id.id_recyclerview);
+        View firstChild = recyclerView.getChildAt(0);
+        int firstVisiblePosition = recyclerView.getChildAdapterPosition(firstChild);
+
+        SharedPreferences.Editor editor = getSharedPreferences("Settings", MODE_PRIVATE).edit();
+        editor.putInt("LASTX", firstVisiblePosition);
+        editor.putInt("LASTY", scrollY);
+        editor.apply();
     }
 
     @Override
@@ -309,40 +331,22 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void scrollToLastPickedCell() {      //TODO: Fix Scrollview
-        /*SharedPreferences prefs = getSharedPreferences("Settings", MODE_PRIVATE);
-        final int lastPickedCell = prefs.getInt("LASTCELL", 0);
-
-        RecyclerView.SmoothScroller smoothScroller = new
-                LinearSmoothScroller(getApplicationContext()) {
-                    @Override
-                    protected int getVerticalSnapPreference() {
-                        return LinearSmoothScroller.SNAP_TO_START;
-                    }
-                    @Override
-                    protected int getHorizontalSnapPreference() {
-                        return LinearSmoothScroller.SNAP_TO_START;
-                    }
-                };
-
-        smoothScroller.setTargetPosition(lastPickedCell);
-        return  smoothScroller;*/
-
+    private void scrollToLastPickedCell() {
         SharedPreferences prefs = getSharedPreferences("Settings", MODE_PRIVATE);
-        final float lastX = prefs.getFloat("LASTX", 0);
-        final float lastY = prefs.getFloat("LASTY", 0);
+        final int lastX = prefs.getInt("LASTX", 0);
+        final int lastY = prefs.getInt("LASTY", 0);
         final int lastIndex = prefs.getInt("LASTINDEX", 0);
         Log.d(TAG,"LastX: " + lastX + ", LastY: " + lastY);
         Log.d(TAG,"LastIndex: " + lastIndex);
 
         //scroll
-        final NestedScrollView sv = findViewById(R.id.id_scrollView);
-        sv.scrollTo(0, (int) lastY); // these are your x and y coordinates
-
-        //TODO:Scroll in Y!!!! jeez
-        final RecyclerView rv = findViewById(R.id.id_recyclerview);
-        rv.scrollBy((int) lastX, (int) lastY); // these are your x and y coordinates
-        //rv.smoothScrollToPosition(lastIndex);
+        myRecycleView.smoothScrollToPosition(lastIndex + NumRows*3);
+        myScrollView.post(new Runnable() {
+            @Override
+            public void run() {
+                myScrollView.smoothScrollTo(0, lastY); // these are your x and y coordinates
+            }
+        });
 
 
     }

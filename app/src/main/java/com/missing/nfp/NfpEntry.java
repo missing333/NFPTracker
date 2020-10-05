@@ -21,6 +21,8 @@ import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatRadioButton;
+import androidx.core.widget.NestedScrollView;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -199,7 +201,6 @@ public class NfpEntry extends AppCompatActivity {
                 int stickerID = getStickerID();
                 String code = generateFinalCode();
 
-
                 Intent intent = getIntent();
                 intent.putExtra("INDEX", index);
                 intent.putExtra("DATE", dateCode);
@@ -214,8 +215,6 @@ public class NfpEntry extends AppCompatActivity {
                 editor.putString(index + "comments", comments);
                 editor.putInt(index + "sticker", stickerID);
                 editor.putInt(index + "stickerButton", radioGroup.getCheckedRadioButtonId());
-                editor.putFloat("LASTX", lastX);
-                editor.putFloat("LASTY", lastY);
                 editor.putInt("LASTINDEX", index);
                 editor.apply();
 
