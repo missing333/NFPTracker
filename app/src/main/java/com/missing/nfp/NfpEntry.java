@@ -48,8 +48,8 @@ public class NfpEntry extends AppCompatActivity {
         setContentView(R.layout.activity_nfp_entry);
 
         final int index = getIntent().getIntExtra("INDEX", 0);
-        final float lastX = getIntent().getFloatExtra("LASTX", 0);
-        final float lastY = getIntent().getFloatExtra("LASTY", 0);
+        final int lastX = getIntent().getIntExtra("LASTX", 0);
+        final int lastY = getIntent().getIntExtra("LASTY", 0);
         Log.d(TAG,"Received Coords: X: " + lastX + ", Y: " + lastY);
 
         ////Set activity to smaller 'popup' window

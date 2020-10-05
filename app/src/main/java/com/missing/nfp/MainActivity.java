@@ -318,6 +318,7 @@ public class MainActivity extends AppCompatActivity {
 
                         clearAllCells();
                         populateCells();
+                        scrollToLastPickedCell();
                     }
                 });
         builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
@@ -339,8 +340,10 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG,"LastX: " + lastX + ", LastY: " + lastY);
         Log.d(TAG,"LastIndex: " + lastIndex);
 
-        //scroll
+        //scroll in x
         myRecycleView.smoothScrollToPosition(lastIndex + NumRows*3);
+
+        //scroll in y
         myScrollView.post(new Runnable() {
             @Override
             public void run() {
