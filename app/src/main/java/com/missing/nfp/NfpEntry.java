@@ -48,9 +48,7 @@ public class NfpEntry extends AppCompatActivity {
         setContentView(R.layout.activity_nfp_entry);
 
         final int index = getIntent().getIntExtra("INDEX", 0);
-        final int lastX = getIntent().getIntExtra("LASTX", 0);
-        final int lastY = getIntent().getIntExtra("LASTY", 0);
-        Log.d(TAG,"Received Coords: X: " + lastX + ", Y: " + lastY);
+        final int lastY = getIntent().getIntExtra("LASTROW", 0);
 
         ////Set activity to smaller 'popup' window
         DisplayMetrics dm = new DisplayMetrics();
@@ -134,7 +132,6 @@ public class NfpEntry extends AppCompatActivity {
             }
         });
 
-
         //clear cell button
         Button clear = findViewById(R.id.clearCell);
         clear.setOnClickListener(new View.OnClickListener() {
@@ -165,8 +162,6 @@ public class NfpEntry extends AppCompatActivity {
                                 editor.putString(index + "comments", "");
                                 editor.putInt(index + "sticker", 0);
                                 editor.putInt(index + "stickerButton", 0);
-                                editor.putFloat("LASTX", 0);
-                                editor.putFloat("LASTY", 0);
                                 editor.apply();
 
                                 setResult(1, intent); //The data you want to send back
@@ -216,9 +211,10 @@ public class NfpEntry extends AppCompatActivity {
                 editor.putInt(index + "sticker", stickerID);
                 editor.putInt(index + "stickerButton", radioGroup.getCheckedRadioButtonId());
                 editor.putInt("LASTINDEX", index);
+                editor.putInt("LASTROW", lastY);
                 editor.apply();
 
-                Log.d(TAG,"Setting Coords: X: " + lastX + ", Y: " + lastY);
+                Log.d(TAG,"Setting Coords: LASTINDEX: " + index + ", Last Row: " + lastY);
 
                 setResult(1, intent); //The data you want to send back
 
@@ -249,6 +245,8 @@ public class NfpEntry extends AppCompatActivity {
         else if (baby.isChecked())
             stickerCode = R.drawable.sticker_baby;
         Log.d("NFPEntry","sticker Code = " + stickerCode);
+        final ScrollView sc = findViewById(R.id.nfpScrollView);
+        sc.smoothScrollTo(0, 1850);
         return stickerCode;
     }
 
@@ -722,5 +720,28 @@ public class NfpEntry extends AppCompatActivity {
         freqLbl.setVisibility(state);
         freqGroup.setVisibility(state);
         mods.setVisibility(state);
+    }
+
+    public void onStickerButtonClicked(View view) {
+        boolean isSelected = ((AppCompatRadioButton) view).isChecked();
+        Log.d("sticker","Sticker ID is: " +view.getId());
+        switch (view.getId()){
+            case R.id.green:
+                break;
+            case R.id.yellow:
+                break;
+            case R.id.red:
+                break;
+            case R.id.babyGreen:
+                break;
+            case R.id.babyYellow:
+                break;
+            case R.id.baby:
+                break;
+        }
+
+        Log.d("freqRadio","freqCode is: " + freqCode);
+        final ScrollView sc = findViewById(R.id.nfpScrollView);
+        sc.smoothScrollTo(0, 1850); // these are your x and y coordinates
     }
 }

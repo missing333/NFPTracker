@@ -110,8 +110,8 @@ public class MainActivity extends AppCompatActivity {
         int firstVisiblePosition = recyclerView.getChildAdapterPosition(firstChild);
 
         SharedPreferences.Editor editor = getSharedPreferences("Settings", MODE_PRIVATE).edit();
-        editor.putInt("LASTX", firstVisiblePosition);
-        editor.putInt("LASTY", scrollY);
+        editor.putInt("LASTINDEX", firstVisiblePosition);
+        editor.putInt("LASTROW", scrollY);
         editor.apply();
     }
 
@@ -271,7 +271,6 @@ public class MainActivity extends AppCompatActivity {
         myAdapter.notifyDataSetChanged();
 
         Log.d("timing", "End Populate Cells");
-        //scrollToLastPickedCell();
     }
 
     private void clearAllCells(){
@@ -283,8 +282,6 @@ public class MainActivity extends AppCompatActivity {
             editor.putString(i + "code", "");
             editor.putString(i + "comments", "");
             editor.putInt(i + "sticker", 0);
-            editor.putFloat("LASTX", 0);
-            editor.putFloat("LASTY", 0);
             editor.apply();
         }
         myAdapter.notifyDataSetChanged();
@@ -312,8 +309,8 @@ public class MainActivity extends AppCompatActivity {
                         //update prefs
                         SharedPreferences.Editor editor = getSharedPreferences("Settings", MODE_PRIVATE).edit();
                         editor.putBoolean("legalNoticeUnderstood", false);
-                        editor.putFloat("LASTX", 0);
-                        editor.putFloat("LASTY", 0);
+                        editor.putInt("LASTINDEX", 0);
+                        editor.putInt("LASTROW", 0);
                         editor.apply();
 
                         clearAllCells();
@@ -334,11 +331,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void scrollToLastPickedCell() {
         SharedPreferences prefs = getSharedPreferences("Settings", MODE_PRIVATE);
-        final int lastX = prefs.getInt("LASTX", 0);
-        final int lastY = prefs.getInt("LASTY", 0);
+        final int lastY = Math.round(prefs.getInt("LASTROW", 0));
         final int lastIndex = prefs.getInt("LASTINDEX", 0);
-        Log.d(TAG,"LastX: " + lastX + ", LastY: " + lastY);
-        Log.d(TAG,"LastIndex: " + lastIndex);
+        Log.d(TAG,"LastIndex: " + lastIndex + ", LastY: " + lastY);
 
         //scroll in x
         myRecycleView.smoothScrollToPosition(lastIndex + NumRows*3);

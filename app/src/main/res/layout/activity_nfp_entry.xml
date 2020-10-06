@@ -68,7 +68,8 @@
                     android:layout_width="250dp"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:paddingHorizontal="15dp">
+                    android:paddingHorizontal="15dp"
+                    tools:ignore="UselessParent">
 
                     <RadioButton
                         android:id="@+id/noBlood"
@@ -79,7 +80,7 @@
                         android:button="@android:color/transparent"
                         android:gravity="center"
                         android:padding="7dp"
-                        android:text="none"
+                        android:text="@string/none"
                         android:onClick="onRadioBloodButtonClicked"
                         android:textColor="@android:color/darker_gray" />
 
@@ -94,7 +95,7 @@
                         android:checked="false"
                         android:gravity="center"
                         android:padding="7dp"
-                        android:text="B"
+                        android:text="@string/b"
                         android:onClick="onRadioBloodButtonClicked"
                         android:textColor="@color/brown" />
 
@@ -109,7 +110,7 @@
                         android:checked="false"
                         android:gravity="center"
                         android:padding="7dp"
-                        android:text="LR"
+                        android:text="@string/lr"
                         android:onClick="onRadioBloodButtonClicked"
                         android:textColor="@color/lightRed" />
 
@@ -125,7 +126,7 @@
                         android:gravity="center"
                         android:onClick="onRadioBloodButtonClicked"
                         android:padding="7dp"
-                        android:text="MR"
+                        android:text="@string/mr"
                         android:textColor="@color/medRed" />
 
                     <RadioButton
@@ -140,7 +141,7 @@
                         android:gravity="center"
                         android:onClick="onRadioBloodButtonClicked"
                         android:padding="7dp"
-                        android:text="HR"
+                        android:text="@string/hr"
                         android:textColor="@color/darkRed" />
                 </RadioGroup>
 
@@ -201,13 +202,12 @@
                         android:id="@+id/noMucus"
                         android:layout_width="70dp"
                         android:layout_height="50dp"
-                        android:layout_alignParentLeft="true"
                         android:layout_alignParentStart="true"
                         android:layout_weight="1"
                         android:background="@drawable/radio_mucus_nomucus_selector"
                         android:button="@android:color/transparent"
                         android:gravity="center"
-                        android:text="0 - No Mucus"
+                        android:text="@string/_0_no_mucus"
                         android:onClick="onRadioMucusButtonClicked"
                         android:textColor="@color/colorPrimaryDark" />
 
@@ -217,12 +217,12 @@
                         android:layout_height="50dp"
                         android:layout_marginStart="-1dp"
                         android:layout_weight="1"
-                        android:layout_toRightOf="@id/noMucus"
+                        android:layout_toEndOf="@id/noMucus"
                         android:background="@drawable/radio_mucus_2_selector"
                         android:button="@android:color/transparent"
                         android:checked="false"
                         android:gravity="center"
-                        android:text="2 - Damp"
+                        android:text="@string/_2_damp"
                         android:onClick="onRadioMucusButtonClicked"
                         android:textColor="@color/colorPrimaryDark" />
 
@@ -231,13 +231,13 @@
                         android:layout_width="70dp"
                         android:layout_height="50dp"
                         android:layout_weight="1"
-                        android:layout_toRightOf="@id/mucus2"
+                        android:layout_toEndOf="@id/mucus2"
                         android:layout_marginStart="-1dp"
                         android:background="@drawable/radio_mucus_4_selector"
                         android:button="@android:color/transparent"
                         android:checked="false"
                         android:gravity="center"
-                        android:text="4 - Wet"
+                        android:text="@string/_4_wet"
                         android:onClick="onRadioMucusButtonClicked"
                         android:textColor="@color/colorPrimaryDark" />
 
@@ -253,7 +253,7 @@
                         android:checked="false"
                         android:gravity="center"
                         android:onClick="onRadioMucusButtonClicked"
-                        android:text="6 - Sticky"
+                        android:text="@string/_6_sticky"
                         android:textColor="@color/colorPrimaryDark" />
 
                     <RadioButton
@@ -264,14 +264,14 @@
                         android:layout_marginStart="-1dp"
                         android:layout_marginTop="-1dp"
                         android:layout_marginBottom="101dp"
-                        android:layout_toRightOf="@+id/mucus6"
+                        android:layout_toEndOf="@+id/mucus6"
                         android:layout_weight="1"
                         android:background="@drawable/radio_mucus_8_selector"
                         android:button="@android:color/transparent"
                         android:checked="false"
                         android:gravity="center"
                         android:onClick="onRadioMucusButtonClicked"
-                        android:text="8 - Tacky"
+                        android:text="@string/_8_tacky"
                         android:textColor="@color/colorPrimaryDark" />
 
                     <RadioButton
@@ -281,14 +281,14 @@
                         android:layout_marginStart="-1dp"
                         android:layout_marginTop="-1dp"
                         android:layout_below="@+id/mucus4"
-                        android:layout_toRightOf="@id/mucus8"
+                        android:layout_toEndOf="@id/mucus8"
                         android:layout_weight="1"
                         android:background="@drawable/radio_mucus_10_selector"
                         android:button="@android:color/transparent"
                         android:checked="false"
                         android:gravity="center"
                         android:onClick="onRadioMucusButtonClicked"
-                        android:text="10 - Stretchy"
+                        android:text="@string/_10_stretchy"
                         android:textColor="@color/colorPrimaryDark" />
                 </com.missing.nfp.RelativeRadioGroup>
 
@@ -320,7 +320,8 @@
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
                     android:orientation="horizontal"
-                    android:paddingHorizontal="30dp">
+                    android:paddingHorizontal="30dp"
+                    tools:ignore="UselessParent">
 
                     <RadioButton
                         android:id="@+id/allDay"
@@ -347,7 +348,7 @@
                         android:textAlignment="center"
                         android:onClick="onRadioFreqButtonClicked"
                         android:textColor="@color/freq"
-                        android:text="x1" />
+                        android:text="@string/x1" />
 
                     <RadioButton
                         android:id="@+id/freq2"
@@ -361,7 +362,7 @@
                         android:textColor="@color/freq"
                         android:onClick="onRadioFreqButtonClicked"
                         android:textAlignment="center"
-                        android:text="x2" />
+                        android:text="@string/x2" />
 
                     <RadioButton
                         android:id="@+id/freq3"
@@ -375,7 +376,7 @@
                         android:textColor="@color/freq"
                         android:onClick="onRadioFreqButtonClicked"
                         android:textAlignment="center"
-                        android:text="x3" />
+                        android:text="@string/x3" />
 
                 </RadioGroup>
             </TableRow>
@@ -523,7 +524,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:layout_marginHorizontal="10dp"
+                    tools:ignore="UselessParent">
 
                     <RadioButton
                         android:id="@+id/green"
@@ -532,7 +535,8 @@
                         android:background="@drawable/radiobg_sticker"
                         android:button="@null"
                         android:drawableEnd="@drawable/sticker_green"
-                        android:padding="7dp" />
+                        android:padding="7dp"
+                        android:onClick="onStickerButtonClicked" />
 
                     <RadioButton
                         android:id="@+id/yellow"
@@ -541,7 +545,8 @@
                         android:background="@drawable/radiobg_sticker"
                         android:button="@null"
                         android:drawableEnd="@drawable/sticker_yellow"
-                        android:padding="7dp" />
+                        android:padding="7dp"
+                        android:onClick="onStickerButtonClicked"/>
 
                     <RadioButton
                         android:id="@+id/red"
@@ -550,7 +555,8 @@
                         android:background="@drawable/radiobg_sticker"
                         android:button="@null"
                         android:drawableEnd="@drawable/sticker_red"
-                        android:padding="7dp" />
+                        android:padding="7dp"
+                        android:onClick="onStickerButtonClicked"/>
 
                     <RadioButton
                         android:id="@+id/babyGreen"
@@ -561,7 +567,8 @@
                         android:background="@drawable/radiobg_sticker"
                         android:button="@null"
                         android:drawableEnd="@drawable/sticker_baby_green"
-                        android:padding="7dp" />
+                        android:padding="7dp"
+                        android:onClick="onStickerButtonClicked"/>
 
                     <RadioButton
                         android:id="@+id/babyYellow"
@@ -572,7 +579,8 @@
                         android:background="@drawable/radiobg_sticker"
                         android:button="@null"
                         android:drawableEnd="@drawable/sticker_baby_yellow"
-                        android:padding="7dp" />
+                        android:padding="7dp"
+                        android:onClick="onStickerButtonClicked"/>
 
                     <RadioButton
                         android:id="@+id/baby"
@@ -583,7 +591,8 @@
                         android:background="@drawable/radiobg_sticker"
                         android:button="@null"
                         android:drawableEnd="@drawable/sticker_baby"
-                        android:padding="7dp" />
+                        android:padding="7dp"
+                        android:onClick="onStickerButtonClicked"/>
 
                 </RadioGroup>
 
@@ -600,7 +609,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:layout_marginHorizontal="10dp"
+                    tools:ignore="UselessParent">
 
                     <RadioButton
                         android:id="@+id/peak"
@@ -609,7 +620,7 @@
                         android:layout_weight="1"
                         android:background="@drawable/radiobg"
                         android:button="@null"
-                        android:padding="5dp"
+                        android:padding="10dp"
                         android:textAlignment="center"
                         android:text="@string/peak" />
 
@@ -620,7 +631,7 @@
                         android:layout_weight="1"
                         android:background="@drawable/radiobg"
                         android:button="@null"
-                        android:padding="5dp"
+                        android:padding="10dp"
                         android:textAlignment="center"
                         android:text="@string/_1" />
 
@@ -631,7 +642,7 @@
                         android:layout_weight="1"
                         android:background="@drawable/radiobg"
                         android:button="@null"
-                        android:padding="5dp"
+                        android:padding="10dp"
                         android:textAlignment="center"
                         android:text="@string/_2" />
 
@@ -642,7 +653,7 @@
                         android:layout_weight="1"
                         android:background="@drawable/radiobg"
                         android:button="@null"
-                        android:padding="5dp"
+                        android:padding="10dp"
                         android:textAlignment="center"
                         android:text="@string/_3" />
 
@@ -653,8 +664,8 @@
                         android:layout_weight="1"
                         android:background="@drawable/radiobg"
                         android:button="@null"
-                        android:padding="5dp"
-                        android:text=" "
+                        android:padding="10dp"
+                        android:text="@string/blank"
                         android:textAlignment="center" />
                 </RadioGroup>
 

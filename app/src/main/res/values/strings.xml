@@ -58,6 +58,21 @@
     <string name="legal_Prompt">This app is merely to aid in tracking fertility indicators.  \n\n  We neither guarantee to avoid pregnancy, nor do we guarantee to achieve it.</string>
     <string name="legalLabel">Legal Notice</string>
     <string name="understand">I Understand</string>
+    <string name="none">none</string>
+    <string name="b">B</string>
+    <string name="lr">LR</string>
+    <string name="mr">MR</string>
+    <string name="hr">HR</string>
+    <string name="_0_no_mucus">0 - No Mucus</string>
+    <string name="_2_damp">2 - Damp</string>
+    <string name="_4_wet">4 - Wet</string>
+    <string name="_6_sticky">6 - Sticky</string>
+    <string name="_8_tacky">8 - Tacky</string>
+    <string name="_10_stretchy">10 - Stretchy</string>
+    <string name="x1">x1</string>
+    <string name="x2">x2</string>
+    <string name="x3">x3</string>
+    <string name="blank">" "</string>
 
 
 </resources>
