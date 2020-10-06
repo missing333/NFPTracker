@@ -23,7 +23,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private static final String TAG = "RecyclerViewAdapter";
     private Context mContext;
     private List<Cell> mData;
-    static final int NumRows = 7;  //also change NumRows in MainActivity!!!
+    static final int NumRows = 7;  //TODO: Set to 2 for free version, any amt for paid version
 
 
     public int getNumRows() {

@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     List<Cell> AllCells;
     int NumRows;   //Number of Rows is set in RecyclerViewAdapter!!!
-    int NumCols = 35;
+    int NumCols = 35;  //TODO: allow user to change in paid version
     RecyclerViewAdapter myAdapter;
     RecyclerView myRecycleView;
     NestedScrollView myScrollView;
