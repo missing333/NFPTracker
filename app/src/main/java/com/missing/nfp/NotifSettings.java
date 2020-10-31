@@ -5,7 +5,6 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
@@ -43,21 +42,20 @@ public class NotifSettings extends PreferenceActivity {
             addPreferencesFromResource(R.xml.pref_notification);
             PreferenceManager.getDefaultSharedPreferences(getContext()).registerOnSharedPreferenceChangeListener(this);
 
-            TimePreference tp = (TimePreference) getPreferenceManager().findPreference("timePref_Key");
-            tp.showTime(tp.getH(), tp.getM());
         }
 
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 
-            Intent intent1 = new Intent(getContext(), MyReceiver.class);
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), 0, intent1, PendingIntent.FLAG_UPDATE_CURRENT);
-            AlarmManager am = (AlarmManager) getActivity().getSystemService(ALARM_SERVICE);
 
             if (key.equals("notifications_new_message")) {
+                Intent intent1 = new Intent(getContext(), MyReceiver.class);
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), 0, intent1, PendingIntent.FLAG_UPDATE_CURRENT);
+                AlarmManager am = (AlarmManager) getActivity().getSystemService(ALARM_SERVICE);
+
                 boolean notifPref = sharedPreferences.getBoolean("notifications_new_message", true);
 
                 if (notifPref) {
-                    MainActivity.startAlarming(getContext());
+                    ActivityMain.startAlarming(getContext());
                     Log.d(TAG, "Set alarm from Toggle Notifs ON.");
                 } else {
                     am.cancel(pendingIntent);
@@ -68,7 +66,7 @@ public class NotifSettings extends PreferenceActivity {
             }
 
             if (key.equals("timePref_Key")) {
-                MainActivity.startAlarming(getContext());
+                ActivityMain.startAlarming(getContext());
                 Log.d(TAG, "Set alarm from TimeChange.");
 
             }

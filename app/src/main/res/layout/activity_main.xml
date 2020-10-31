@@ -1,15 +1,66 @@
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/id_scrollView"
-    android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_height="match_parent"
-    android:isScrollContainer="true"
-    android:orientation="vertical">
+    android:layout_width="match_parent"
+    android:id="@+id/idConstraintLayout"
+    >
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/id_recyclerview"
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/idRowAdd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:onClick="AddRow"
+        android:src="@android:drawable/arrow_down_float"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/idRowDelete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="DeleteRow"
+        android:src="@android:drawable/arrow_up_float"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/idRowAdd" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/idColAdd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="AddCol"
+        android:src="@android:drawable/ic_media_play"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/idColDelete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="DeleteCol"
+        android:src="@android:drawable/ic_input_delete"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/idColAdd" />
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/id_scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:background="@color/mainBG"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
-</androidx.core.widget.NestedScrollView>
+        android:isScrollContainer="true"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/id_recyclerview"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

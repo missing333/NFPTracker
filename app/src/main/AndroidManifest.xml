@@ -14,7 +14,7 @@
         android:theme="@style/AppTheme"
         android:launchMode="singleTask">
         <activity
-            android:name=".MainActivity"
+            android:name=".ActivityMain"
             android:label="@string/app_name"
             android:launchMode="singleTask"
             android:theme="@style/AppTheme">
@@ -32,12 +32,12 @@
         <activity
             android:name=".NotifSettings"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName=".ActivityMain"
             android:theme="@style/AppTheme"
             android:launchMode="singleTask">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.missing.nfp.MainActivity" />
+                android:value="com.missing.nfp.ActivityMain" />
         </activity>
 
 

@@ -48,22 +48,34 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
-public class MainActivity extends AppCompatActivity {
+public class ActivityMain extends AppCompatActivity {
     private static final String TAG = "MainActivity";
+
+    SharedPreferences sharedPreferences;
     List<Cell> AllCells;
-    int NumRows;   //Number of Rows is set in RecyclerViewAdapter!!!
-    int NumCols = 35;  //TODO: allow user to change in paid version
+    int NumRows;
+    int NumCols;
+    final static int defaultNumRows = 2;
+    final static int defaultNumCols = 4;
     RecyclerViewAdapter myAdapter;
     RecyclerView myRecycleView;
     NestedScrollView myScrollView;
+    StaggeredGridLayoutManager staggeredGridLayoutManager;
     //TODO: make scrolling horizontally more forgiving
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("timing", "Starting On Create");
+        Log.d(TAG, "Starting On Create");
         setContentView(R.layout.activity_main);
+
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        NumRows = sharedPreferences.getInt("numRows", defaultNumRows);  //add one for header row, one for footer row
+        NumCols = sharedPreferences.getInt("numCols", defaultNumCols);  //add one for Add/Subtract column
+        Log.d(TAG, "Cycles(w/header&footer): " + NumRows + ", Days(w/add&subtr col): " + NumCols);
 
         AllCells = new ArrayList<>();
 
@@ -83,15 +95,14 @@ public class MainActivity extends AppCompatActivity {
         myRecycleView = findViewById(R.id.id_recyclerview);
         myScrollView = findViewById(R.id.id_scrollView);
         myAdapter = new RecyclerViewAdapter(this, AllCells);
-        NumRows = myAdapter.getNumRows();
-        StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(NumRows, LinearLayoutManager.HORIZONTAL);
+        myAdapter.setNumRows(NumRows);
+        myAdapter.setNumCols(NumCols);
+        staggeredGridLayoutManager = new StaggeredGridLayoutManager(NumRows, LinearLayoutManager.HORIZONTAL);
         myRecycleView.setLayoutManager(staggeredGridLayoutManager); // set LayoutManager to RecyclerView
-        myRecycleView.setNestedScrollingEnabled(false);
+        myRecycleView.setNestedScrollingEnabled(true);
         myRecycleView.setAdapter(myAdapter);
 
-
-        populateCells();
-        scrollToLastPickedCell();
+        populateCells(NumRows);
 
         startAlarming(getApplicationContext());
 
@@ -155,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         if (id == R.id.action_settings) {
-            Intent intent = new Intent(MainActivity.this, NotifSettings.class);
+            Intent intent = new Intent(ActivityMain.this, NotifSettings.class);
             startActivity(intent);
             return true;
         } else if (id == R.id.action_print) {
@@ -183,8 +194,6 @@ public class MainActivity extends AppCompatActivity {
             printPDF("autoSave", false);
         }
     }
-
-
 
     public static void openDownloads(@NonNull Activity activity) {
         if (isSamsung()) {
@@ -227,10 +236,12 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void populateCells() {
+    public void populateCells(int newRows) {
         Log.d("timing", "Starting Populate Cells");
 
         SharedPreferences prefs = getSharedPreferences("Settings", MODE_PRIVATE);
+        NumRows = sharedPreferences.getInt("numRows", defaultNumRows);
+        NumCols = sharedPreferences.getInt("numCols", defaultNumCols);
         boolean legalNoticeUnderstood = prefs.getBoolean("legalNoticeUnderstood", false);
         if (!legalNoticeUnderstood) {
             //Legal Notice:
@@ -258,20 +269,48 @@ public class MainActivity extends AppCompatActivity {
             dialog.show();
         }
 
+
         AllCells.clear();
-        for (int i = 0; i < NumRows * NumCols; i++)
-        {
+        for (int i = 0; i <= (NumRows * NumCols); i++){
+            //pull saved info for each cell
             String savedDate = prefs.getString(i + "date", "");
             String savedCode = prefs.getString(i + "code", "");
             String savedComments = prefs.getString(i + "comments", "");
             int savedStickerButton = prefs.getInt(i + "sticker", 0);
 
-            AllCells.add(new Cell(savedDate, savedCode, savedComments, savedStickerButton));
+
+            if (newRows > NumRows){
+                //increasing, so add buffer cell each column.
+                if (i % NumRows == 0 && i > 0){
+                    //just add new spacer cell here.  adding the saved info comes later
+                    AllCells.add(new Cell());
+                }
+            }
+            if (newRows < NumRows) {
+                //decreasing, so remove the NumRow'th cell.
+                if (i % NumRows != NumRows - 1) {   //if NOT last row, add cell to AllCells, otherwise, skip it.
+                    AllCells.add(new Cell(savedDate, savedCode, savedComments, savedStickerButton));
+                }
+            }else{
+                //add saved info if adding more rows, or same number of rows.
+                AllCells.add(new Cell(savedDate, savedCode, savedComments, savedStickerButton));
+            }
         }
+
+        //re-save info for each cell so that it displays correctly for the next re-populate
+        for (int i = 0; i < AllCells.size(); i++){
+            prefs.edit().putString(i + "date", AllCells.get(i).getDate()).apply();
+            prefs.edit().putString(i + "code", AllCells.get(i).getCode()).apply();
+            prefs.edit().putString(i + "comments", AllCells.get(i).getComments()).apply();
+            prefs.edit().putInt(i + "sticker", AllCells.get(i).getSticker()).apply();
+        }
+
         myAdapter.notifyDataSetChanged();
 
+        scrollToLastPickedCell();
         Log.d("timing", "End Populate Cells");
     }
+
 
     private void clearAllCells(){
         AllCells.clear();
@@ -303,7 +342,7 @@ public class MainActivity extends AppCompatActivity {
                         String formattedDate = df.format(c);
 
                         //auto-save before clearing everything
-                        Toast.makeText(MainActivity.this, "Saving...", Toast.LENGTH_LONG).show();
+                        Toast.makeText(ActivityMain.this, "Saving...", Toast.LENGTH_LONG).show();
                         printPDF( "Before Clear on " + formattedDate, false);
 
                         //update prefs
@@ -314,7 +353,7 @@ public class MainActivity extends AppCompatActivity {
                         editor.apply();
 
                         clearAllCells();
-                        populateCells();
+                        populateCells(NumRows);
                         scrollToLastPickedCell();
                     }
                 });
@@ -329,11 +368,11 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void scrollToLastPickedCell() {
+    public void scrollToLastPickedCell() {
         SharedPreferences prefs = getSharedPreferences("Settings", MODE_PRIVATE);
         final int lastY = Math.round(prefs.getInt("LASTROW", 0));
         final int lastIndex = prefs.getInt("LASTINDEX", 0);
-        Log.d(TAG,"LastIndex: " + lastIndex + ", LastY: " + lastY);
+        //Log.d(TAG,"LastIndex: " + lastIndex + ", LastY: " + lastY);
 
         //scroll in x
         myRecycleView.smoothScrollToPosition(lastIndex + NumRows*3);
@@ -405,7 +444,7 @@ public class MainActivity extends AppCompatActivity {
             FileOutputStream fOut = new FileOutputStream(file);
 
             if (displayPDF){
-                Toast.makeText(MainActivity.this, "Saving...", Toast.LENGTH_LONG).show();
+                Toast.makeText(ActivityMain.this, "Saving...", Toast.LENGTH_LONG).show();
             }
             Bitmap bm = getScreenshotFromRecyclerView(myRecycleView);
 
@@ -508,6 +547,47 @@ public class MainActivity extends AppCompatActivity {
 
         }
         return bigBitmap;
+    }
+
+    public void AddRow(View view) {
+        int newRows = sharedPreferences.getInt("numRows",defaultNumRows)+1;
+        myAdapter.setNumRows(newRows);
+        staggeredGridLayoutManager = new StaggeredGridLayoutManager(newRows, LinearLayoutManager.HORIZONTAL);
+        myRecycleView.setLayoutManager(staggeredGridLayoutManager);
+        Log.d(TAG,"NumRows: " + newRows);
+        populateCells(newRows);
+        sharedPreferences.edit().putInt("numRows",newRows).apply();
+    }
+
+    public void DeleteRow(View view) {
+        int newRows = sharedPreferences.getInt("numRows",defaultNumRows)-1;
+        if (newRows <= 1){
+            Toast.makeText(this,"Can't Delete the last row",Toast.LENGTH_SHORT).show();
+        }else {
+            //TODO: add warning that data can be lost when doing this
+            myAdapter.setNumRows(newRows);
+            staggeredGridLayoutManager = new StaggeredGridLayoutManager(newRows, LinearLayoutManager.HORIZONTAL);
+            myRecycleView.setLayoutManager(staggeredGridLayoutManager);
+            Log.d(TAG,"NumRows: " + newRows);
+            populateCells(newRows);
+            sharedPreferences.edit().putInt("numRows",newRows).apply();
+        }
+    }
+
+    public void AddCol(View view) {
+        int newCols = NumCols+1;
+        sharedPreferences.edit().putInt("numCols",newCols).apply();
+        myAdapter.setNumCols(newCols);
+        Log.d(TAG,"NumCols: " + newCols);
+        populateCells(sharedPreferences.getInt("numRows",defaultNumRows));
+    }
+
+    public void DeleteCol(View view) {
+        int newCols = NumCols-1;
+        sharedPreferences.edit().putInt("numCols",newCols).apply();
+        myAdapter.setNumCols(newCols);
+        Log.d(TAG,"NumCols: " + newCols);
+        populateCells(sharedPreferences.getInt("numRows",defaultNumRows));
     }
 }
 

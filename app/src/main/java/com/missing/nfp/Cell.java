@@ -7,6 +7,12 @@ public class Cell {
     private String Comments;
     private int Sticker;
 
+    public Cell() {
+        Date = "";
+        Code = "";
+        Comments = "";
+        Sticker = 0;
+    }
 
     public Cell(String date, String code, String comments, int sticker) {
         Date = date;

@@ -17,7 +17,7 @@ public class DeviceBootReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) {
-            MainActivity.startAlarming(context);
+            ActivityMain.startAlarming(context);
             Log.d("DeviceBootReceiver", "Set alarm from BootReceiver.");
         }
     }

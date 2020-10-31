@@ -3,6 +3,7 @@ package com.missing.nfp;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,7 +13,10 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
 
@@ -20,15 +24,18 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     private static final int TYPE_HEADER = 0;
     private static final int TYPE_ITEM = 1;
+    private static final int TYPE_FOOTER = 2;
     private static final String TAG = "RecyclerViewAdapter";
     private Context mContext;
     private List<Cell> mData;
-    static final int NumRows = 7;  //TODO: Set to 2 for free version, any amt for paid version
+    private int NumRows;
+    private int NumCols;
 
 
-    public int getNumRows() {
-        return NumRows;
+    public void setNumRows(int n) {
+        this.NumRows = n;
     }
+    public void setNumCols(int n) { this.NumCols = n; }
 
     public RecyclerViewAdapter(Context mContext, List<Cell> mData) {
         this.mContext = mContext;
@@ -37,9 +44,16 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     @Override
     public int getItemViewType(int position) {
+
+
+        /*if (isPositionRightMargin(position)){
+            return TYPE_FOOTER;
+        }
+        if (isPositionFooter(position)){
+            return TYPE_FOOTER;
+        }*/
         if (isPositionHeader(position)) {
             return TYPE_HEADER;
-
         }
         return TYPE_ITEM;
     }
@@ -47,22 +61,29 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private boolean isPositionHeader(int position) {
         return position % NumRows == 0;
     }
+    private boolean isPositionFooter(int position) {
+        return position % NumRows == NumRows-1;
+    }
+    private boolean isPositionRightMargin(int position) {
+        return position / NumRows >= NumCols;
+    }
 
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
 
-        if (viewType == TYPE_ITEM) {
-            View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.cardview_item, viewGroup, false);
-            return new ItemViewHolder(view);
-
-        } else if (viewType == TYPE_HEADER) {
-            View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.header_item, viewGroup, false);
-            return new HeaderViewHolder(view);
+        View view;
+        switch (viewType){
+            case TYPE_HEADER:
+                view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.header_item, viewGroup, false);
+                return new HeaderViewHolder(view);
+            /*case TYPE_FOOTER:
+                view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.footer_item, viewGroup, false);
+                return new FooterViewHolder(view);*/
+            default:
+                view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.cardview_item, viewGroup, false);
+                return new ItemViewHolder(view);
         }
-
-        throw new RuntimeException("there is no type that matches the type " + viewType + " + make sure your using types correctly");
-
     }
 
 
@@ -127,6 +148,20 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         }
     }
+    static class FooterViewHolder extends RecyclerView.ViewHolder {
+        public View View;
+        private final TextView txtName;
+
+        public FooterViewHolder(View itemView) {
+            super(itemView);
+            View = itemView;
+
+            // add your ui components here like this below
+            txtName = View.findViewById(R.id.id_footer_label);
+
+        }
+    }
+
     static class ItemViewHolder extends RecyclerView.ViewHolder {
 
         TextView tv_cell_code;
