@@ -73,6 +73,8 @@
     <string name="x2">x2</string>
     <string name="x3">x3</string>
     <string name="blank">" "</string>
+    <string name="deluxe">This feature requires Charti Deluxe.</string>
+    <string name="store_prompt">Would you like to go to the Play Store now?</string>
 
 
 </resources>

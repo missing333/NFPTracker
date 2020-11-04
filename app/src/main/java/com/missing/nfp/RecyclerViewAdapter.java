@@ -24,7 +24,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     private static final int TYPE_HEADER = 0;
     private static final int TYPE_ITEM = 1;
-    private static final int TYPE_FOOTER = 2;
+    private static final int TYPE_MARGIN = 2;
     private static final String TAG = "RecyclerViewAdapter";
     private Context mContext;
     private List<Cell> mData;
@@ -35,7 +35,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     public void setNumRows(int n) {
         this.NumRows = n;
     }
-    public void setNumCols(int n) { this.NumCols = n; }
+    public void setNumCols(int n) {
+        this.NumCols = n;
+    }
 
     public RecyclerViewAdapter(Context mContext, List<Cell> mData) {
         this.mContext = mContext;
@@ -44,15 +46,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     @Override
     public int getItemViewType(int position) {
-
-
-        /*if (isPositionRightMargin(position)){
-            return TYPE_FOOTER;
-        }
-        if (isPositionFooter(position)){
-            return TYPE_FOOTER;
-        }*/
-        if (isPositionHeader(position)) {
+         if (isPositionMargin(position)){
+            return TYPE_MARGIN;
+        } else if (isPositionHeader(position)) {
             return TYPE_HEADER;
         }
         return TYPE_ITEM;
@@ -61,11 +57,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private boolean isPositionHeader(int position) {
         return position % NumRows == 0;
     }
-    private boolean isPositionFooter(int position) {
-        return position % NumRows == NumRows-1;
-    }
-    private boolean isPositionRightMargin(int position) {
-        return position / NumRows >= NumCols;
+    private boolean isPositionMargin(int position) {
+        return (position > (this.NumRows * this.NumCols)-1);
     }
 
     @NonNull
@@ -73,17 +66,16 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
 
         View view;
-        switch (viewType){
-            case TYPE_HEADER:
-                view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.header_item, viewGroup, false);
-                return new HeaderViewHolder(view);
-            /*case TYPE_FOOTER:
-                view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.footer_item, viewGroup, false);
-                return new FooterViewHolder(view);*/
-            default:
-                view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.cardview_item, viewGroup, false);
-                return new ItemViewHolder(view);
+        if (viewType == TYPE_HEADER) {
+            view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.header_item, viewGroup, false);
+            return new HeaderViewHolder(view);
         }
+        else if (viewType == TYPE_MARGIN) {
+            view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.margin_item, viewGroup, false);
+            return new MarginViewHolder(view);
+        }
+        view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.cardview_item, viewGroup, false);
+        return new ItemViewHolder(view);
     }
 
 
@@ -96,6 +88,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             //set the Header Label
             String text = 1+position/NumRows+"";
             ((HeaderViewHolder) holder).txtName.setText(text);
+
+            //similarly bind other UI components or perform operations
+
+        }else if (holder instanceof MarginViewHolder) {
+
+            //set the Header Label
+            String text = "margin";
+            ((MarginViewHolder) holder).txtName.setText(text);
 
             //similarly bind other UI components or perform operations
 
@@ -117,7 +117,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     intent.putExtra("COMMENTS", mData.get(position).getComments());
                     intent.putExtra("STICKER", mData.get(position).getSticker());
 
-                    //mContext.startActivity(intent);
                     ((Activity) mContext).startActivityForResult(intent,333);
                 }
             });
@@ -148,16 +147,17 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         }
     }
-    static class FooterViewHolder extends RecyclerView.ViewHolder {
+
+    static class MarginViewHolder extends RecyclerView.ViewHolder {
         public View View;
         private final TextView txtName;
 
-        public FooterViewHolder(View itemView) {
+        public MarginViewHolder(View itemView) {
             super(itemView);
             View = itemView;
 
             // add your ui components here like this below
-            txtName = View.findViewById(R.id.id_footer_label);
+            txtName = View.findViewById(R.id.id_margin_label);
 
         }
     }

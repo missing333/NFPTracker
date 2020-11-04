@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.missing.nfp">
+    <queries>
+        <package android:name="com.missing.chartideluxe" />
+    </queries>
 
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
 
     <application
         android:allowBackup="true"
@@ -12,7 +16,8 @@
         android:roundIcon="@mipmap/app_icon_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:launchMode="singleTask">
+        android:launchMode="singleTask"
+        android:requestLegacyExternalStorage="true">
         <activity
             android:name=".ActivityMain"
             android:label="@string/app_name"
@@ -26,6 +31,11 @@
 
         <activity
             android:name=".NfpEntry"
+            android:theme="@style/AppTheme.Modal.EasyRemove"
+            android:launchMode="singleTask" />
+
+        <activity
+            android:name=".ActivityPlayStorePrompt"
             android:theme="@style/AppTheme.Modal.EasyRemove"
             android:launchMode="singleTask" />
 

@@ -48,7 +48,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 
 public class ActivityMain extends AppCompatActivity {
     private static final String TAG = "MainActivity";
@@ -63,7 +62,9 @@ public class ActivityMain extends AppCompatActivity {
     RecyclerView myRecycleView;
     NestedScrollView myScrollView;
     StaggeredGridLayoutManager staggeredGridLayoutManager;
+    Context mainContext = this;
     //TODO: make scrolling horizontally more forgiving
+    //TODO: update add/rem row/col button icons
 
 
     @Override
@@ -72,24 +73,30 @@ public class ActivityMain extends AppCompatActivity {
         Log.d(TAG, "Starting On Create");
         setContentView(R.layout.activity_main);
 
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mainContext);
         NumRows = sharedPreferences.getInt("numRows", defaultNumRows);  //add one for header row, one for footer row
         NumCols = sharedPreferences.getInt("numCols", defaultNumCols);  //add one for Add/Subtract column
         Log.d(TAG, "Cycles(w/header&footer): " + NumRows + ", Days(w/add&subtr col): " + NumCols);
 
         AllCells = new ArrayList<>();
 
-        //checking for permission to write
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
+        if (isWritePermissionNeeded()) {
+            AlertDialog.Builder builder =
+                    new AlertDialog.Builder(mainContext);
+            builder.setMessage("Permission to access Storage is required for this app to create PDF backups.")
+                    .setTitle("Permission required");
 
-            // Permission is not granted
-            // request the permission
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    2);
+            builder.setPositiveButton("I Understand",
+                    new DialogInterface.OnClickListener() {
 
+                        public void onClick(DialogInterface dialog, int id) {
+                            Log.i(TAG, "OK Clicked");
+                            makeWritePermissionRequest();
+                        }
+                    });
+
+            AlertDialog dialog = builder.create();
+            dialog.show();
         }
 
         myRecycleView = findViewById(R.id.id_recyclerview);
@@ -103,12 +110,36 @@ public class ActivityMain extends AppCompatActivity {
         myRecycleView.setAdapter(myAdapter);
 
         populateCells(NumRows);
+        scrollToLastPickedCell();
 
         startAlarming(getApplicationContext());
 
         Log.d("timing", "End On Create");
     }
 
+    protected boolean isWritePermissionNeeded(){
+        if (ContextCompat.checkSelfPermission(mainContext,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+            Log.d(TAG,"Write pemissions are needed.");
+            return true;
+        }else{
+            Log.d(TAG,"Write pemissions are granted.");
+            return false;
+        }
+    }
+    protected void makeWritePermissionRequest(){
+
+        //checking for permission to write
+        if (isWritePermissionNeeded()) {
+
+            // Permission is not granted
+            // request the permission
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    2);
+
+        }
+    }
 
     @Override
     protected void onPause() {
@@ -124,6 +155,16 @@ public class ActivityMain extends AppCompatActivity {
         editor.putInt("LASTINDEX", firstVisiblePosition);
         editor.putInt("LASTROW", scrollY);
         editor.apply();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+
+        if (sharedPref.getBoolean("autoSave", true)){
+            printPDF("autoSave", false);
+        }
     }
 
     @Override
@@ -173,7 +214,8 @@ public class ActivityMain extends AppCompatActivity {
             Date c = Calendar.getInstance().getTime();
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MMM-dd", Locale.US);
             String formattedDate = df.format(c);
-            printPDF(formattedDate, true);
+            if(!isWritePermissionNeeded())
+                printPDF(formattedDate, true);
             return true;
         } else if (id == R.id.action_view) {
             openDownloads(this);
@@ -183,16 +225,6 @@ public class ActivityMain extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-
-        if (sharedPref.getBoolean("autoSave", true)){
-            printPDF("autoSave", false);
-        }
     }
 
     public static void openDownloads(@NonNull Activity activity) {
@@ -233,7 +265,6 @@ public class ActivityMain extends AppCompatActivity {
         String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath() + "/Charti";
         Log.d("chartiPath", "path = " + path);
         return path;
-
     }
 
     public void populateCells(int newRows) {
@@ -271,7 +302,7 @@ public class ActivityMain extends AppCompatActivity {
 
 
         AllCells.clear();
-        for (int i = 0; i <= (NumRows * NumCols); i++){
+        for (int i = 0; i < (NumRows * NumCols) + NumRows; i++){
             //pull saved info for each cell
             String savedDate = prefs.getString(i + "date", "");
             String savedCode = prefs.getString(i + "code", "");
@@ -297,6 +328,12 @@ public class ActivityMain extends AppCompatActivity {
             }
         }
 
+        if (newRows > NumRows){
+            //add the last buffer cell after we are all done when making MORE rows.
+            AllCells.add(new Cell());
+        }
+
+
         //re-save info for each cell so that it displays correctly for the next re-populate
         for (int i = 0; i < AllCells.size(); i++){
             prefs.edit().putString(i + "date", AllCells.get(i).getDate()).apply();
@@ -307,7 +344,6 @@ public class ActivityMain extends AppCompatActivity {
 
         myAdapter.notifyDataSetChanged();
 
-        scrollToLastPickedCell();
         Log.d("timing", "End Populate Cells");
     }
 
@@ -431,7 +467,6 @@ public class ActivityMain extends AppCompatActivity {
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public void printPDF(String pdfName, Boolean displayPDF) {
 
-
         //Permission has already been granted
         //start creating PDF here.
         File fol = new File(getChartiFile());
@@ -439,7 +474,7 @@ public class ActivityMain extends AppCompatActivity {
             fol.mkdirs();
         }
         try {
-            final File file = new File(fol,  pdfName + ".pdf");
+            File file = new File(fol,  pdfName + ".pdf");
             file.createNewFile();
             FileOutputStream fOut = new FileOutputStream(file);
 
@@ -550,44 +585,80 @@ public class ActivityMain extends AppCompatActivity {
     }
 
     public void AddRow(View view) {
-        int newRows = sharedPreferences.getInt("numRows",defaultNumRows)+1;
-        myAdapter.setNumRows(newRows);
-        staggeredGridLayoutManager = new StaggeredGridLayoutManager(newRows, LinearLayoutManager.HORIZONTAL);
-        myRecycleView.setLayoutManager(staggeredGridLayoutManager);
-        Log.d(TAG,"NumRows: " + newRows);
-        populateCells(newRows);
-        sharedPreferences.edit().putInt("numRows",newRows).apply();
-    }
-
-    public void DeleteRow(View view) {
-        int newRows = sharedPreferences.getInt("numRows",defaultNumRows)-1;
-        if (newRows <= 1){
-            Toast.makeText(this,"Can't Delete the last row",Toast.LENGTH_SHORT).show();
-        }else {
-            //TODO: add warning that data can be lost when doing this
+        if (isProInstalled(this)){
+            int newRows = sharedPreferences.getInt("numRows",defaultNumRows)+1;
             myAdapter.setNumRows(newRows);
             staggeredGridLayoutManager = new StaggeredGridLayoutManager(newRows, LinearLayoutManager.HORIZONTAL);
             myRecycleView.setLayoutManager(staggeredGridLayoutManager);
             Log.d(TAG,"NumRows: " + newRows);
             populateCells(newRows);
             sharedPreferences.edit().putInt("numRows",newRows).apply();
+        }else{
+            //launch playstore activity to buy pro version
+            startActivity(new Intent(this, ActivityPlayStorePrompt.class));
+        }
+    }
+
+    public void DeleteRow(View view) {
+        if (isProInstalled(this)){
+            int newRows = sharedPreferences.getInt("numRows",defaultNumRows)-1;
+            if (newRows <= 1){
+                Toast.makeText(this,"Can't Delete the last row",Toast.LENGTH_SHORT).show();
+            }else {
+                //TODO: add warning that data can be lost when doing this
+                myAdapter.setNumRows(newRows);
+                staggeredGridLayoutManager = new StaggeredGridLayoutManager(newRows, LinearLayoutManager.HORIZONTAL);
+                myRecycleView.setLayoutManager(staggeredGridLayoutManager);
+                Log.d(TAG,"NumRows: " + newRows);
+                populateCells(newRows);
+                sharedPreferences.edit().putInt("numRows",newRows).apply();
+            }
+        }else{
+            //launch playstore activity to buy pro version
+            startActivity(new Intent(this, ActivityPlayStorePrompt.class));
         }
     }
 
     public void AddCol(View view) {
-        int newCols = NumCols+1;
-        sharedPreferences.edit().putInt("numCols",newCols).apply();
-        myAdapter.setNumCols(newCols);
-        Log.d(TAG,"NumCols: " + newCols);
-        populateCells(sharedPreferences.getInt("numRows",defaultNumRows));
+        if (isProInstalled(this)){
+            int newCols = NumCols+1;
+            myAdapter.setNumCols(newCols);
+            sharedPreferences.edit().putInt("numCols",newCols).apply();
+            Log.d(TAG,"NumCols: " + newCols);
+            populateCells(sharedPreferences.getInt("numRows",defaultNumRows));
+
+        }else{
+            //launch playstore activity to buy pro version
+            startActivity(new Intent(this, ActivityPlayStorePrompt.class));
+        }
     }
 
     public void DeleteCol(View view) {
-        int newCols = NumCols-1;
-        sharedPreferences.edit().putInt("numCols",newCols).apply();
-        myAdapter.setNumCols(newCols);
-        Log.d(TAG,"NumCols: " + newCols);
-        populateCells(sharedPreferences.getInt("numRows",defaultNumRows));
+        if (isProInstalled(this)){
+            //TODO: add warning that data can be lost when doing this
+            int newCols = NumCols-1;
+            myAdapter.setNumCols(newCols);
+            sharedPreferences.edit().putInt("numCols",newCols).apply();
+            Log.d(TAG,"NumCols: " + newCols);
+            populateCells(sharedPreferences.getInt("numRows",defaultNumRows));
+        }else{
+            //launch playstore activity to buy pro version
+            startActivity(new Intent(this, ActivityPlayStorePrompt.class));
+        }
+    }
+
+    protected boolean isProInstalled(Context context) {
+        PackageManager manager = context.getPackageManager();
+        try {
+            if (manager.checkSignatures(context.getPackageName(), "com.missing.chartideluxe")
+                    == PackageManager.SIGNATURE_MATCH) {
+                //Pro key installed, and signatures match
+                return true;
+            }
+        } catch (Exception e) {
+            return false;
+        }
+        return false;
     }
 }
 

@@ -2,12 +2,13 @@
 <resources>
     <color name="colorPrimary">#def4e0</color>
     <color name="colorPrimaryDark">#3BA882</color>
-    <color name="colorAccent">#03DAC5</color>
+    <color name="colorAccent">#3BA882</color>
 <!--    <color name="colorPrimaryDark">#c3dfc5</color>-->
 <!--    <color name="colorAccent">#FF5722</color>-->
     <color name="ic_launcher_background">#DEF4E0</color>
     <color name="titleTextColor">#047b46</color>
     <color name="mainBG">#959595</color>
+    <color name="fab">#777777</color>
     <color name="brown">#9A6653</color>
     <color name="lightRed">#FFC4C4</color>
     <color name="medRed">#FF8181</color>

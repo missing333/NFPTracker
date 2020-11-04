@@ -37,8 +37,7 @@ public class ActivityPlayStorePrompt extends Activity {
         yes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO: change this to correct pro package
-                final String appPackageName = "com.missing.missilelauncherpro"; // getPackageName() from Context or Activity object
+                final String appPackageName = "com.missing.chartideluxe"; // getPackageName() from Context or Activity object
                 try {
                     startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
                 } catch (android.content.ActivityNotFoundException anfe) {
