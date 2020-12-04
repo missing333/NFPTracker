@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:theme="@style/AppTheme.Modal.EasyRemove"
-    tools:context=".NfpEntry">
+    tools:context=".ActivityNfpEntry">
 
     <ScrollView
         android:id="@+id/nfpScrollView"
@@ -516,7 +516,7 @@
 
             <TableRow
                 android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:gravity="center_horizontal">
 
                 <RadioGroup
@@ -536,7 +536,9 @@
                         android:button="@null"
                         android:drawableEnd="@drawable/sticker_green"
                         android:padding="7dp"
-                        android:onClick="onStickerButtonClicked" />
+                        android:onClick="onStickerButtonClicked"
+                        android:scaleX=".75"
+                        android:scaleY=".75" />
 
                     <RadioButton
                         android:id="@+id/yellow"
@@ -546,6 +548,10 @@
                         android:button="@null"
                         android:drawableEnd="@drawable/sticker_yellow"
                         android:padding="7dp"
+                        android:layout_marginStart="-20dp"
+                        android:layout_marginEnd="-18dp"
+                        android:scaleX=".75"
+                        android:scaleY=".75"
                         android:onClick="onStickerButtonClicked"/>
 
                     <RadioButton
@@ -556,45 +562,55 @@
                         android:button="@null"
                         android:drawableEnd="@drawable/sticker_red"
                         android:padding="7dp"
+                        android:layout_marginStart="-10dp"
+                        android:scaleX=".75"
+                        android:scaleY=".75"
                         android:onClick="onStickerButtonClicked"/>
 
                     <RadioButton
                         android:id="@+id/babyGreen"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="-270dp"
+                        android:layout_marginStart="-295dp"
                         android:layout_marginTop="65dp"
                         android:background="@drawable/radiobg_sticker"
                         android:button="@null"
                         android:drawableEnd="@drawable/sticker_baby_green"
                         android:padding="7dp"
+                        android:scaleX=".75"
+                        android:scaleY=".75"
                         android:onClick="onStickerButtonClicked"/>
 
                     <RadioButton
                         android:id="@+id/babyYellow"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="-0dp"
                         android:layout_marginTop="65dp"
                         android:background="@drawable/radiobg_sticker"
                         android:button="@null"
                         android:drawableEnd="@drawable/sticker_baby_yellow"
                         android:padding="7dp"
+                        android:layout_marginStart="-20dp"
+                        android:layout_marginEnd="-18dp"
+                        android:scaleX=".75"
+                        android:scaleY=".75"
                         android:onClick="onStickerButtonClicked"/>
 
                     <RadioButton
                         android:id="@+id/baby"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="-0dp"
                         android:layout_marginTop="65dp"
                         android:background="@drawable/radiobg_sticker"
                         android:button="@null"
                         android:drawableEnd="@drawable/sticker_baby"
                         android:padding="7dp"
+                        android:layout_marginStart="-10dp"
+                        android:scaleX=".75"
+                        android:scaleY=".75"
                         android:onClick="onStickerButtonClicked"/>
 
-                </RadioGroup>
+                    </RadioGroup>
 
 
             </TableRow>

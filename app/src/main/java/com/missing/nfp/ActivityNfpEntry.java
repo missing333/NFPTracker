@@ -29,7 +29,7 @@ import java.util.Calendar;
 import java.util.Locale;
 
 @SuppressWarnings("deprecation")
-public class NfpEntry extends AppCompatActivity {
+public class ActivityNfpEntry extends AppCompatActivity {
 
     private static final String TAG = "NfpEntry";
     CalendarView date;

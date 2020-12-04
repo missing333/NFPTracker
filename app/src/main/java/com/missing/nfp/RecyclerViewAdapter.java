@@ -3,7 +3,6 @@ package com.missing.nfp;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,10 +12,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
-import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
 
@@ -106,7 +102,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 @Override
                 public void onClick(View v) {
 
-                    Intent intent = new Intent(mContext, NfpEntry.class);
+                    Intent intent = new Intent(mContext, ActivityNfpEntry.class);
 
                     //Pass data to NfpEntry activity
                     Log.d(TAG,"Cell #: " + position);

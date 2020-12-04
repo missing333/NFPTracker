@@ -4,7 +4,7 @@
     xmlns:cardview="http://schemas.android.com/apk/res-auto"
     android:id="@+id/id_whole_cell"
     android:layout_width="75dp"
-    android:layout_height="130dp"
+    android:layout_height="105dp"
     android:layout_marginHorizontal="1dp"
     android:layout_marginVertical="2dp"
     android:clickable="true"
@@ -12,13 +12,13 @@
     cardview:cardCornerRadius="10dp">
 
         <!-- ____________________________________________________________________ -->
-        <!--    to change width/height, change here AND in all other _item layouts!!!!!    -->
+        <!--    to change width/height, change above,below AND in all other _item layouts!!!!!    -->
         <!--_______________________________________________________________________-->
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="75dp"
-        android:layout_height="130dp">
+        android:layout_height="110dp">
 
         <ImageView
             android:id="@+id/id_sticker_code"

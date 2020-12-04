@@ -30,7 +30,7 @@
         </activity>
 
         <activity
-            android:name=".NfpEntry"
+            android:name=".ActivityNfpEntry"
             android:theme="@style/AppTheme.Modal.EasyRemove"
             android:launchMode="singleTask" />
 
