@@ -94,7 +94,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }else if (holder instanceof MarginViewHolder) {
 
             //set the Header Label
-            String text = "margin";
+            String text = " ";
             ((MarginViewHolder) holder).txtName.setText(text);
 
             //similarly bind other UI components or perform operations

@@ -491,34 +491,49 @@ public class ActivityMain extends AppCompatActivity {
             int pageHeight = 595;
             PdfDocument document = null;
 
-
-            NumCols = sharedPreferences.getInt("numCols", defaultNumCols);  //add one for Add/Subtract column
-            int edge = 100;
-            if (NumCols > 0) {
+            boolean oldWayToPrint = false;
+            if (oldWayToPrint) {
                 //Page1
+                int right = bm.getWidth()/reducer;
+                int bottom = bm.getHeight()/reducer;
                 document = new PdfDocument();
                 PdfDocument.PageInfo pageInfo1 = new PdfDocument.PageInfo.Builder(pageWidth, pageHeight, 1).create();
                 PdfDocument.Page page1 = document.startPage(pageInfo1);
-                page1.getCanvas().drawBitmap(bm, null, new Rect(10, 0, edge, 250), null);
+                page1.getCanvas().drawBitmap(bm, null, new Rect(10, 0, right, bottom), null);
                 document.finishPage(page1);
-            }
 
-            if (NumCols > 18) {
                 //Page2
+                int left = -bm.getWidth()/(reducer*2);
                 PdfDocument.PageInfo pageInfo2 = new PdfDocument.PageInfo.Builder(pageWidth, pageHeight, 2).create();
                 PdfDocument.Page page2 = document.startPage(pageInfo2);
-                page2.getCanvas().drawBitmap(bm, null, new Rect(edge, 0, edge*2, 250), null);
+                page2.getCanvas().drawBitmap(bm, null, new Rect(left, 0, -left, bottom), null);
                 document.finishPage(page2);
+            } else {
+                NumRows = sharedPreferences.getInt("numRows", defaultNumRows);  //add one for header row, one for footer row
+                NumCols = sharedPreferences.getInt("numCols", defaultNumCols);  //add one for Add/Subtract column
+                int edge = 1650;
+                int bottom = 100 * NumRows;
+                if (NumCols > 0) {
+                    //Page1
+                    document = new PdfDocument();
+                    PdfDocument.PageInfo pageInfo1 = new PdfDocument.PageInfo.Builder(pageWidth, pageHeight, 1).create();
+                    PdfDocument.Page page1 = document.startPage(pageInfo1);
+                    page1.getCanvas().drawBitmap(bm, null, new Rect(10, 0, edge, bottom), null);
+                    document.finishPage(page1);
+                }
+
+                edge = edge /2;
+                if (NumCols > 18) {
+                    //Page2
+                    PdfDocument.PageInfo pageInfo2 = new PdfDocument.PageInfo.Builder(pageWidth, pageHeight, 2).create();
+                    PdfDocument.Page page2 = document.startPage(pageInfo2);
+                    page2.getCanvas().drawBitmap(bm, null, new Rect(-edge, 0, edge, bottom), null);
+                    document.finishPage(page2);
+                }
             }
 
-            edge += edge;
-            if (NumCols > 36) {
-                //Page2
-                PdfDocument.PageInfo pageInfo3 = new PdfDocument.PageInfo.Builder(pageWidth, pageHeight, 3).create();
-                PdfDocument.Page page3 = document.startPage(pageInfo3);
-                page3.getCanvas().drawBitmap(bm, null, new Rect(edge, 0, edge*2, 250), null);
-                document.finishPage(page3);
-            }
+
+
 
 
             // write the document content
@@ -581,6 +596,8 @@ public class ActivityMain extends AppCompatActivity {
                 width += iWidth;
                 //iHeight = tempHeight;
             }
+
+            NumRows = sharedPreferences.getInt("numRows", defaultNumRows);  //add one for header row, one for footer row
 
             bigBitmap = Bitmap.createBitmap(width/NumRows, view.getMeasuredHeight(), Bitmap.Config.ARGB_8888);
             Canvas bigCanvas = new Canvas(bigBitmap);

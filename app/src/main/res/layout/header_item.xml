@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="80dp"
-    android:layout_height="130dp">
+    android:layout_width="75dp"
+    android:layout_height="100dp">
 
     <TextView
         android:id="@+id/id_header_label"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="75dp"
+        android:layout_height="100dp"
         android:gravity="center"
         android:text="1"
         android:textSize="25sp">
