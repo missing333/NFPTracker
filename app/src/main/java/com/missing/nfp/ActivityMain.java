@@ -34,6 +34,7 @@ import androidx.collection.LruCache;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.NestedScrollView;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
@@ -57,11 +58,11 @@ public class ActivityMain extends AppCompatActivity {
     int NumRows;
     int NumCols;
     final static int defaultNumRows = 2;
-    final static int defaultNumCols = 4;
+    final static int defaultNumCols = 35;
     RecyclerViewAdapter myAdapter;
     RecyclerView myRecycleView;
     NestedScrollView myScrollView;
-    StaggeredGridLayoutManager staggeredGridLayoutManager;
+    androidx.recyclerview.widget.GridLayoutManager gridLayoutManager;
     Context mainContext = this;
     //TODO: make scrolling horizontally more forgiving
     //TODO: update add/rem row/col button icons
@@ -104,8 +105,10 @@ public class ActivityMain extends AppCompatActivity {
         myAdapter = new RecyclerViewAdapter(this, AllCells);
         myAdapter.setNumRows(NumRows);
         myAdapter.setNumCols(NumCols);
-        staggeredGridLayoutManager = new StaggeredGridLayoutManager(NumRows, LinearLayoutManager.HORIZONTAL);
-        myRecycleView.setLayoutManager(staggeredGridLayoutManager); // set LayoutManager to RecyclerView
+        gridLayoutManager = new GridLayoutManager(mainContext, NumRows, LinearLayoutManager.HORIZONTAL,false);
+
+        myRecycleView.setLayoutManager(gridLayoutManager);
+
         myRecycleView.setNestedScrollingEnabled(true);
         myRecycleView.setAdapter(myAdapter);
 
@@ -486,19 +489,37 @@ public class ActivityMain extends AppCompatActivity {
             int reducer = 7;
             int pageWidth = 842;
             int pageHeight = 595;
+            PdfDocument document = null;
 
-            //Page1
-            PdfDocument document = new PdfDocument();
-            PdfDocument.PageInfo pageInfo1 = new PdfDocument.PageInfo.Builder(pageWidth, pageHeight, 1).create();
-            PdfDocument.Page page1 = document.startPage(pageInfo1);
-            page1.getCanvas().drawBitmap(bm, null, new Rect(10, 0, bm.getWidth()/reducer, bm.getHeight()/reducer), null);
-            document.finishPage(page1);
 
-            //Page2
-            PdfDocument.PageInfo pageInfo2 = new PdfDocument.PageInfo.Builder(pageWidth, pageHeight, 2).create();
-            PdfDocument.Page page2 = document.startPage(pageInfo2);
-            page2.getCanvas().drawBitmap(bm, null, new Rect(-bm.getWidth()/(reducer*2), 0, bm.getWidth()/(reducer*2), bm.getHeight()/reducer), null);
-            document.finishPage(page2);
+            NumCols = sharedPreferences.getInt("numCols", defaultNumCols);  //add one for Add/Subtract column
+            int edge = 100;
+            if (NumCols > 0) {
+                //Page1
+                document = new PdfDocument();
+                PdfDocument.PageInfo pageInfo1 = new PdfDocument.PageInfo.Builder(pageWidth, pageHeight, 1).create();
+                PdfDocument.Page page1 = document.startPage(pageInfo1);
+                page1.getCanvas().drawBitmap(bm, null, new Rect(10, 0, edge, 250), null);
+                document.finishPage(page1);
+            }
+
+            if (NumCols > 18) {
+                //Page2
+                PdfDocument.PageInfo pageInfo2 = new PdfDocument.PageInfo.Builder(pageWidth, pageHeight, 2).create();
+                PdfDocument.Page page2 = document.startPage(pageInfo2);
+                page2.getCanvas().drawBitmap(bm, null, new Rect(edge, 0, edge*2, 250), null);
+                document.finishPage(page2);
+            }
+
+            edge += edge;
+            if (NumCols > 36) {
+                //Page2
+                PdfDocument.PageInfo pageInfo3 = new PdfDocument.PageInfo.Builder(pageWidth, pageHeight, 3).create();
+                PdfDocument.Page page3 = document.startPage(pageInfo3);
+                page3.getCanvas().drawBitmap(bm, null, new Rect(edge, 0, edge*2, 250), null);
+                document.finishPage(page3);
+            }
+
 
             // write the document content
             document.writeTo(fOut);
@@ -565,6 +586,7 @@ public class ActivityMain extends AppCompatActivity {
             Canvas bigCanvas = new Canvas(bigBitmap);
             bigCanvas.drawColor(Color.WHITE);
 
+
             //this part draws the cache onto the BigBitmap
             float tempWidth = 0f;
             float tempHeight = 0f;
@@ -581,6 +603,7 @@ public class ActivityMain extends AppCompatActivity {
             }
 
         }
+
         return bigBitmap;
     }
 
@@ -588,8 +611,10 @@ public class ActivityMain extends AppCompatActivity {
         if (isProInstalled(this)){
             int newRows = sharedPreferences.getInt("numRows",defaultNumRows)+1;
             myAdapter.setNumRows(newRows);
-            staggeredGridLayoutManager = new StaggeredGridLayoutManager(newRows, LinearLayoutManager.HORIZONTAL);
-            myRecycleView.setLayoutManager(staggeredGridLayoutManager);
+            gridLayoutManager = new GridLayoutManager(mainContext, newRows, LinearLayoutManager.HORIZONTAL,false);
+            //staggeredGridLayoutManager = new StaggeredGridLayoutManager(newRows, LinearLayoutManager.HORIZONTAL);
+            //myRecycleView.setLayoutManager(staggeredGridLayoutManager);
+            myRecycleView.setLayoutManager(gridLayoutManager);
             Log.d(TAG,"NumRows: " + newRows);
             populateCells(newRows);
             sharedPreferences.edit().putInt("numRows",newRows).apply();
@@ -601,17 +626,35 @@ public class ActivityMain extends AppCompatActivity {
 
     public void DeleteRow(View view) {
         if (isProInstalled(this)){
-            int newRows = sharedPreferences.getInt("numRows",defaultNumRows)-1;
+            final int newRows = sharedPreferences.getInt("numRows",defaultNumRows)-1;
             if (newRows <= 1){
                 Toast.makeText(this,"Can't Delete the last row",Toast.LENGTH_SHORT).show();
             }else {
-                //TODO: add warning that data can be lost when doing this
-                myAdapter.setNumRows(newRows);
-                staggeredGridLayoutManager = new StaggeredGridLayoutManager(newRows, LinearLayoutManager.HORIZONTAL);
-                myRecycleView.setLayoutManager(staggeredGridLayoutManager);
-                Log.d(TAG,"NumRows: " + newRows);
-                populateCells(newRows);
-                sharedPreferences.edit().putInt("numRows",newRows).apply();
+                AlertDialog.Builder builder =
+                        new AlertDialog.Builder(mainContext);
+                builder.setMessage("This row will be deleted.  Data will not be saved.")
+                        .setTitle("Caution!");
+
+                builder.setPositiveButton("OK",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                //TODO: add warning that data can be lost when doing this
+                                myAdapter.setNumRows(newRows);
+                                gridLayoutManager = new GridLayoutManager(mainContext, newRows, LinearLayoutManager.HORIZONTAL,false);
+                                myRecycleView.setLayoutManager(gridLayoutManager);
+                                Log.d(TAG,"NumRows: " + newRows);
+                                populateCells(newRows);
+                                sharedPreferences.edit().putInt("numRows",newRows).apply();
+                            }
+                        });
+                builder.setNegativeButton("Cancel",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                            }
+                        });
+
+                AlertDialog dialog = builder.create();
+                dialog.show();
             }
         }else{
             //launch playstore activity to buy pro version
@@ -635,30 +678,55 @@ public class ActivityMain extends AppCompatActivity {
 
     public void DeleteCol(View view) {
         if (isProInstalled(this)){
-            //TODO: add warning that data can be lost when doing this
-            int newCols = NumCols-1;
-            myAdapter.setNumCols(newCols);
-            sharedPreferences.edit().putInt("numCols",newCols).apply();
-            Log.d(TAG,"NumCols: " + newCols);
-            populateCells(sharedPreferences.getInt("numRows",defaultNumRows));
+            AlertDialog.Builder builder =
+                    new AlertDialog.Builder(mainContext);
+            builder.setMessage("This column will be deleted.  Data will not be saved.")
+                    .setTitle("Caution!");
+
+            builder.setPositiveButton("OK",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            //TODO: add warning that data can be lost when doing this
+                            int newCols = NumCols-1;
+                            myAdapter.setNumCols(newCols);
+                            sharedPreferences.edit().putInt("numCols",newCols).apply();
+                            Log.d(TAG,"NumCols: " + newCols);
+                            populateCells(sharedPreferences.getInt("numRows",defaultNumRows));
+                        }
+                    });
+            builder.setNegativeButton("Cancel",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                        }
+                    });
+
+            AlertDialog dialog = builder.create();
+            dialog.show();
+
         }else{
             //launch playstore activity to buy pro version
             startActivity(new Intent(this, ActivityPlayStorePrompt.class));
         }
     }
 
+
     protected boolean isProInstalled(Context context) {
         PackageManager manager = context.getPackageManager();
-        try {
-            if (manager.checkSignatures(context.getPackageName(), "com.missing.chartideluxe")
-                    == PackageManager.SIGNATURE_MATCH) {
+        /*try {
+            String packageName = context.getPackageName();
+            if (manager.checkSignatures(packageName, "com.missing.chartideluxe") == PackageManager.SIGNATURE_MATCH) {
                 //Pro key installed, and signatures match
                 return true;
             }
         } catch (Exception e) {
             return false;
+        }*/  //old method.  didn't work with chartiDeluxe.
+        try {
+            manager.getPackageInfo("com.missing.chartideluxe", 0);
+            return true;
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
         }
-        return false;
     }
 }
 
