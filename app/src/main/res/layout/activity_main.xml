@@ -9,47 +9,71 @@
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/idRowAdd"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="AddRow"
-        android:src="@android:drawable/arrow_down_float"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
+        app:fabCustomSize="55dp"
         android:backgroundTint="@color/fab"
+        android:onClick="AddRow"
+        android:src="@android:drawable/ic_media_play"
+        android:layout_margin="21dp"
         app:borderWidth="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintEnd_toEndOf="@+id/id_scrollView" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/idRowDelete"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="DeleteRow"
-        android:src="@android:drawable/arrow_up_float"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
+        app:fabCustomSize="55dp"
         android:backgroundTint="@color/fab"
+        android:onClick="DeleteRow"
+        android:src="@android:drawable/ic_media_play"
+        android:layout_margin="21dp"
         app:borderWidth="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/idRowAdd" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/idColAdd"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
+        app:fabCustomSize="55dp"
+        android:backgroundTint="@color/fab"
         android:onClick="AddCol"
         android:src="@android:drawable/ic_media_play"
-        android:backgroundTint="@color/fab"
+        android:layout_margin="21dp"
         app:borderWidth="0dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/idColDelete"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
+        app:fabCustomSize="55dp"
+        android:backgroundTint="@color/fab"
+        android:onClick="DeleteCol"
+        android:src="@android:drawable/ic_media_play"
+        android:layout_margin="21dp"
+        app:borderWidth="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/idMenu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="DeleteCol"
-        android:src="@android:drawable/ic_input_delete"
+        app:fabCustomSize="65dp"
+        android:scaleType="centerCrop"
+        android:background="@color/colorPrimary"
         android:backgroundTint="@color/fab"
+        android:onClick="ToggleMenu"
+        android:src="@drawable/ic_add"
+        android:layout_margin="17dp"
         app:borderWidth="0dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/idColAdd" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/id_scrollView"

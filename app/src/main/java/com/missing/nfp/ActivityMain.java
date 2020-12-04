@@ -39,6 +39,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -64,6 +66,8 @@ public class ActivityMain extends AppCompatActivity {
     NestedScrollView myScrollView;
     androidx.recyclerview.widget.GridLayoutManager gridLayoutManager;
     Context mainContext = this;
+    FloatingActionButton fab1, fab2, fab3, fab4, fabmenu;
+    boolean isFABOpen=false;
     //TODO: make scrolling horizontally more forgiving
     //TODO: update add/rem row/col button icons
 
@@ -99,6 +103,13 @@ public class ActivityMain extends AppCompatActivity {
             AlertDialog dialog = builder.create();
             dialog.show();
         }
+
+
+        fab1 = (FloatingActionButton) findViewById(R.id.idRowAdd);
+        fab2 = (FloatingActionButton) findViewById(R.id.idRowDelete);
+        fab3 = (FloatingActionButton) findViewById(R.id.idColDelete);
+        fab4 = (FloatingActionButton) findViewById(R.id.idColAdd);
+        fabmenu = (FloatingActionButton) findViewById(R.id.idMenu);
 
         myRecycleView = findViewById(R.id.id_recyclerview);
         myScrollView = findViewById(R.id.id_scrollView);
@@ -655,7 +666,6 @@ public class ActivityMain extends AppCompatActivity {
                 builder.setPositiveButton("OK",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
-                                //TODO: add warning that data can be lost when doing this
                                 myAdapter.setNumRows(newRows);
                                 gridLayoutManager = new GridLayoutManager(mainContext, newRows, LinearLayoutManager.HORIZONTAL,false);
                                 myRecycleView.setLayoutManager(gridLayoutManager);
@@ -681,6 +691,17 @@ public class ActivityMain extends AppCompatActivity {
 
     public void AddCol(View view) {
         if (isProInstalled(this)){
+            //scroll to the end so you can see it being added/removed
+            //scroll in x
+            myRecycleView.smoothScrollToPosition(myAdapter.getItemCount());
+            //scroll in y
+            myScrollView.post(new Runnable() {
+                @Override
+                public void run() {
+                    myScrollView.smoothScrollTo(0, 0); // these are your x and y coordinates
+                }
+            });
+
             int newCols = NumCols+1;
             myAdapter.setNumCols(newCols);
             sharedPreferences.edit().putInt("numCols",newCols).apply();
@@ -695,30 +716,21 @@ public class ActivityMain extends AppCompatActivity {
 
     public void DeleteCol(View view) {
         if (isProInstalled(this)){
-            AlertDialog.Builder builder =
-                    new AlertDialog.Builder(mainContext);
-            builder.setMessage("This column will be deleted.  Data will not be saved.")
-                    .setTitle("Caution!");
-
-            builder.setPositiveButton("OK",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            //TODO: add warning that data can be lost when doing this
-                            int newCols = NumCols-1;
-                            myAdapter.setNumCols(newCols);
-                            sharedPreferences.edit().putInt("numCols",newCols).apply();
-                            Log.d(TAG,"NumCols: " + newCols);
-                            populateCells(sharedPreferences.getInt("numRows",defaultNumRows));
-                        }
-                    });
-            builder.setNegativeButton("Cancel",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                        }
-                    });
-
-            AlertDialog dialog = builder.create();
-            dialog.show();
+            //scroll to the end so you can see it being added/removed
+            //scroll in x
+            myRecycleView.smoothScrollToPosition(myAdapter.getItemCount());
+            //scroll in y
+            myScrollView.post(new Runnable() {
+                @Override
+                public void run() {
+                    myScrollView.smoothScrollTo(0, 0); // these are your x and y coordinates
+                }
+            });
+            int newCols = NumCols-1;
+            myAdapter.setNumCols(newCols);
+            sharedPreferences.edit().putInt("numCols",newCols).apply();
+            Log.d(TAG,"NumCols: " + newCols);
+            populateCells(sharedPreferences.getInt("numRows",defaultNumRows));
 
         }else{
             //launch playstore activity to buy pro version
@@ -743,6 +755,24 @@ public class ActivityMain extends AppCompatActivity {
             return true;
         } catch (PackageManager.NameNotFoundException e) {
             return false;
+        }
+    }
+
+    public void ToggleMenu(View view) {
+        if(!isFABOpen){
+            isFABOpen=true;
+            fabmenu.animate().rotation(45);
+            fab1.animate().translationY(-getResources().getDimension(R.dimen.standard_55)).rotation(90);
+            fab2.animate().translationY(-getResources().getDimension(R.dimen.standard_105)).rotation(-90);
+            fab3.animate().translationX(-getResources().getDimension(R.dimen.standard_105)).rotation(180);
+            fab4.animate().translationX(-getResources().getDimension(R.dimen.standard_55));
+        }else{
+            isFABOpen=false;
+            fabmenu.animate().rotation(0);
+            fab1.animate().translationY(0);
+            fab2.animate().translationY(0);
+            fab3.animate().translationX(0);
+            fab4.animate().translationX(0);
         }
     }
 }

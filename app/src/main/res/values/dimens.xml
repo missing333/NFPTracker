@@ -1,1 +1,6 @@
-<resources></resources>
+<resources>
+    <dimen name="standard_55">75dp</dimen>
+    <dimen name="standard_105">145dp</dimen>
+    <dimen name="standard_155">215dp</dimen>
+    <dimen name="standard_195">285dp</dimen>
+</resources>
