@@ -298,20 +298,31 @@ public class ActivityNfpEntry extends AppCompatActivity {
         }
 
 
-
+        boolean iExists = false;
+        boolean pExists = (peak.isChecked() || peak1.isChecked() || peak2.isChecked() || peak3.isChecked());
         //add new line if mucus code is present, then add I if that's checked
         if (i.isChecked()) {
            modifierCode += "\nI";
+           iExists = true;
+        }
+
+
+        if(iExists && pExists){
+            modifierCode += ", ";
+        }else if(pExists){
+            modifierCode += "\n";
+        }else {
+            //do nothing
         }
 
         if (peak.isChecked()) {
-            modifierCode += "\nP";
+            modifierCode += "P";
         } else if (peak1.isChecked()) {
-            modifierCode += "\nP1";
+            modifierCode += "P1";
         } else if (peak2.isChecked()) {
-            modifierCode += "\nP2";
+            modifierCode += "P2";
         } else if (peak3.isChecked()) {
-            modifierCode += "\nP3";
+            modifierCode += "P3";
         }
 
         String totalCode = bloodCode + " " + mucusCode + freqCode + " "  + modifierCode;
