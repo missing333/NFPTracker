@@ -59,7 +59,7 @@ public class ActivityMain extends AppCompatActivity {
     List<Cell> AllCells;
     int NumRows;
     int NumCols;
-    final static int defaultNumRows = 2;
+    final static int defaultNumRows = 3;
     final static int defaultNumCols = 35;
     RecyclerViewAdapter myAdapter;
     RecyclerView myRecycleView;
@@ -105,11 +105,11 @@ public class ActivityMain extends AppCompatActivity {
         }
 
 
-        fab1 = (FloatingActionButton) findViewById(R.id.idRowAdd);
-        fab2 = (FloatingActionButton) findViewById(R.id.idRowDelete);
-        fab3 = (FloatingActionButton) findViewById(R.id.idColDelete);
-        fab4 = (FloatingActionButton) findViewById(R.id.idColAdd);
-        fabmenu = (FloatingActionButton) findViewById(R.id.idMenu);
+        fab1 = findViewById(R.id.idRowAdd);
+        fab2 = findViewById(R.id.idRowDelete);
+        fab3 = findViewById(R.id.idColDelete);
+        fab4 = findViewById(R.id.idColAdd);
+        fabmenu = findViewById(R.id.idMenu);
 
         myRecycleView = findViewById(R.id.id_recyclerview);
         myScrollView = findViewById(R.id.id_scrollView);
@@ -316,7 +316,7 @@ public class ActivityMain extends AppCompatActivity {
 
 
         AllCells.clear();
-        for (int i = 0; i < (NumRows * NumCols) + NumRows; i++){
+        for (int i = 0; i < (NumRows * NumCols) + NumRows ; i++){
             //pull saved info for each cell
             String savedDate = prefs.getString(i + "date", "");
             String savedCode = prefs.getString(i + "code", "");
@@ -637,15 +637,20 @@ public class ActivityMain extends AppCompatActivity {
 
     public void AddRow(View view) {
         if (isProInstalled(this)){
-            int newRows = sharedPreferences.getInt("numRows",defaultNumRows)+1;
-            myAdapter.setNumRows(newRows);
-            gridLayoutManager = new GridLayoutManager(mainContext, newRows, LinearLayoutManager.HORIZONTAL,false);
-            //staggeredGridLayoutManager = new StaggeredGridLayoutManager(newRows, LinearLayoutManager.HORIZONTAL);
-            //myRecycleView.setLayoutManager(staggeredGridLayoutManager);
-            myRecycleView.setLayoutManager(gridLayoutManager);
-            Log.d(TAG,"NumRows: " + newRows);
-            populateCells(newRows);
-            sharedPreferences.edit().putInt("numRows",newRows).apply();
+            final int newRows = sharedPreferences.getInt("numRows",defaultNumRows)+1;
+            if (newRows > 7){
+                Toast.makeText(this,"Can't Add more rows than this.",Toast.LENGTH_SHORT).show();
+            }else {
+                myAdapter.setNumRows(newRows);
+                gridLayoutManager = new GridLayoutManager(mainContext, newRows, LinearLayoutManager.HORIZONTAL,false);
+                //staggeredGridLayoutManager = new StaggeredGridLayoutManager(newRows, LinearLayoutManager.HORIZONTAL);
+                //myRecycleView.setLayoutManager(staggeredGridLayoutManager);
+                myRecycleView.setLayoutManager(gridLayoutManager);
+                Log.d(TAG,"NumRows: " + newRows);
+                populateCells(newRows);
+                sharedPreferences.edit().putInt("numRows",newRows).apply();
+            }
+
         }else{
             //launch playstore activity to buy pro version
             startActivity(new Intent(this, ActivityPlayStorePrompt.class));
@@ -751,7 +756,9 @@ public class ActivityMain extends AppCompatActivity {
             return false;
         }*/  //old method.  didn't work with chartiDeluxe.
         try {
-            manager.getPackageInfo("com.missing.chartideluxe", 0);
+            //TODO: uncomment this when ready to deploy chartiDeluxe.
+            //manager.getPackageInfo("com.missing.chartideluxe", 0);
+            manager.getPackageInfo(context.getPackageName(), 0);
             return true;
         } catch (PackageManager.NameNotFoundException e) {
             return false;

@@ -42,7 +42,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     @Override
     public int getItemViewType(int position) {
-         if (isPositionMargin(position)){
+         if (isPositionMargin(position) || isPositionFooter(position)){
             return TYPE_MARGIN;
         } else if (isPositionHeader(position)) {
             return TYPE_HEADER;
@@ -53,8 +53,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private boolean isPositionHeader(int position) {
         return position % NumRows == 0;
     }
-    private boolean isPositionMargin(int position) {
-        return (position > (this.NumRows * this.NumCols)-1);
+    private boolean isPositionMargin(int position) { return (position > (this.NumRows * this.NumCols)-1);}
+    private boolean isPositionFooter(int position) {
+        return (position % NumRows == NumRows-1);
     }
 
     @NonNull
@@ -90,7 +91,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }else if (holder instanceof MarginViewHolder) {
 
             //set the Header Label
-            String text = " ";
+            String text = "M";
             ((MarginViewHolder) holder).txtName.setText(text);
 
             //similarly bind other UI components or perform operations
