@@ -49,7 +49,7 @@ public class NotifSettings extends PreferenceActivity {
 
             if (key.equals("notifications_new_message")) {
                 Intent intent1 = new Intent(getContext(), MyReceiver.class);
-                PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), 0, intent1, PendingIntent.FLAG_UPDATE_CURRENT);
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), 0, intent1, PendingIntent.FLAG_IMMUTABLE);
                 AlarmManager am = (AlarmManager) getActivity().getSystemService(ALARM_SERVICE);
 
                 boolean notifPref = sharedPreferences.getBoolean("notifications_new_message", true);

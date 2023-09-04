@@ -5,6 +5,9 @@
       <module fileurl="file://$PROJECT_DIR$/NFPTracker.iml" filepath="$PROJECT_DIR$/NFPTracker.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/android-zoom-view/NFPTracker.android-zoom-view.iml" filepath="$PROJECT_DIR$/.idea/modules/android-zoom-view/NFPTracker.android-zoom-view.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/NFPTracker.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/NFPTracker.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/NFPTracker.app.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/NFPTracker.app.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/NFPTracker.app.main.iml" filepath="$PROJECT_DIR$/.idea/modules/app/NFPTracker.app.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/NFPTracker.app.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/NFPTracker.app.unitTest.iml" />
     </modules>
   </component>
 </project>

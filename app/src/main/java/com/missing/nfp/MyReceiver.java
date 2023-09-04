@@ -59,7 +59,7 @@ public class MyReceiver extends BroadcastReceiver {
             builder = new NotificationCompat.Builder(context, id);
 
             intent2 = new Intent(context, ActivityMain.class);
-            pendingIntent = PendingIntent.getActivity(context, 0, intent2, 0);
+            pendingIntent = PendingIntent.getActivity(context, 0, intent2, PendingIntent.FLAG_IMMUTABLE);
 
             builder.setContentTitle(aMessage)  // required
                     .setSmallIcon(R.drawable.notif_icon) // required
@@ -73,7 +73,7 @@ public class MyReceiver extends BroadcastReceiver {
             builder = new NotificationCompat.Builder(context);
 
             intent2 = new Intent(context, ActivityMain.class);
-            pendingIntent = PendingIntent.getActivity(context, 0, intent2, 0);
+            pendingIntent = PendingIntent.getActivity(context, 0, intent2, PendingIntent.FLAG_IMMUTABLE);
 
             builder.setContentTitle(aMessage)                           // required
                     .setSmallIcon(R.drawable.notif_icon) // required

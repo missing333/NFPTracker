@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.missing.nfp">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <queries>
         <package android:name="com.missing.chartideluxe" />
@@ -20,7 +20,7 @@
         android:requestLegacyExternalStorage="true">
         <activity
             android:name=".ActivityMain"
-            android:label="@string/app_name"
+            android:exported="true"
             android:launchMode="singleTask"
             android:theme="@style/AppTheme">
             <intent-filter>
@@ -31,11 +31,13 @@
 
         <activity
             android:name=".ActivityNfpEntry"
+            android:exported="true"
             android:theme="@style/AppTheme.Modal.EasyRemove"
             android:launchMode="singleTask" />
 
         <activity
             android:name=".ActivityPlayStorePrompt"
+            android:exported="true"
             android:theme="@style/AppTheme.Modal.EasyRemove"
             android:launchMode="singleTask" />
 
@@ -43,6 +45,7 @@
             android:name=".NotifSettings"
             android:label="@string/title_activity_settings"
             android:parentActivityName=".ActivityMain"
+            android:exported="true"
             android:theme="@style/AppTheme"
             android:launchMode="singleTask">
             <meta-data
@@ -55,7 +58,9 @@
             android:name=".MyReceiver"
             android:exported="true" />
 
-        <receiver android:name=".DeviceBootReceiver">
+        <receiver
+            android:name=".DeviceBootReceiver"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.QUICKBOOT_POWERON" />

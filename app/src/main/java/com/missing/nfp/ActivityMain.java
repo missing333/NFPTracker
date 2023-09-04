@@ -37,7 +37,6 @@ import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -104,7 +103,7 @@ public class ActivityMain extends AppCompatActivity {
             dialog.show();
         }
 
-
+        //define floating action buttons
         fab1 = findViewById(R.id.idRowAdd);
         fab2 = findViewById(R.id.idRowDelete);
         fab3 = findViewById(R.id.idColDelete);
@@ -134,10 +133,10 @@ public class ActivityMain extends AppCompatActivity {
     protected boolean isWritePermissionNeeded(){
         if (ContextCompat.checkSelfPermission(mainContext,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
-            Log.d(TAG,"Write pemissions are needed.");
+            Log.d(TAG,"Write permissions are needed.");
             return true;
         }else{
-            Log.d(TAG,"Write pemissions are granted.");
+            Log.d(TAG,"Write permissions are granted.");
             return false;
         }
     }
@@ -272,7 +271,7 @@ public class ActivityMain extends AppCompatActivity {
     }
     public static boolean isSamsung() {
         String manufacturer = Build.MANUFACTURER;
-        if (manufacturer != null) return manufacturer.toLowerCase().equals("samsung");
+        if (manufacturer != null) return manufacturer.equalsIgnoreCase("samsung");
         return false;
     }
     public static String getChartiFile() {
@@ -295,20 +294,14 @@ public class ActivityMain extends AppCompatActivity {
             builder.setTitle(R.string.legalLabel);
             builder.setMessage(R.string.legal_Prompt);
             builder.setPositiveButton(R.string.understand,
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            //continue deleting
-                            SharedPreferences.Editor editor = getSharedPreferences("Settings", MODE_PRIVATE).edit();
-                            editor.putBoolean("legalNoticeUnderstood", true).apply();
-                        }
+                    (dialog, which) -> {
+                        //continue deleting
+                        SharedPreferences.Editor editor = getSharedPreferences("Settings", MODE_PRIVATE).edit();
+                        editor.putBoolean("legalNoticeUnderstood", true).apply();
                     });
-            builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    //close app
-                    finish();
-                }
+            builder.setNegativeButton(android.R.string.cancel, (dialog, which) -> {
+                //close app
+                finish();
             });
             AlertDialog dialog = builder.create();
             dialog.show();
@@ -407,11 +400,8 @@ public class ActivityMain extends AppCompatActivity {
                         scrollToLastPickedCell();
                     }
                 });
-        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                //cancel delete
-            }
+        builder.setNegativeButton(android.R.string.cancel, (dialog, which) -> {
+            //cancel delete
         });
         AlertDialog dialog = builder.create();
         dialog.show();
@@ -464,7 +454,7 @@ public class ActivityMain extends AppCompatActivity {
             }
 
             Intent intent1 = new Intent(context, MyReceiver.class);
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent1, PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent1, PendingIntent.FLAG_IMMUTABLE);
 
             AlarmManager am = (AlarmManager) context.getSystemService(ALARM_SERVICE);
             am.setInexactRepeating(AlarmManager.RTC, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
@@ -579,7 +569,7 @@ public class ActivityMain extends AppCompatActivity {
             int size = adapter.getItemCount();
             int width = 0;
             Paint paint = new Paint();
-            int iHeight = 0;
+            int iHeight;
             int iWidth = 0;
             final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
 
